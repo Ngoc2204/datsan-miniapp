@@ -32,6 +32,14 @@ Kiểm tra luồng MVP bằng `rtk npm run test:mvp` sau khi PostgreSQL đã ch�
 
 Các lệnh theo quy ước RTK của workspace. Không commit file .env. Thư mục .tailieu được loại khỏi Git bằng .gitignore.
 
+## Database production trên Neon
+
+- Cấu hình `DATABASE_URL` của API Render bằng connection string của Neon; không commit connection string hoặc secret vào Git.
+- `npm run start:render` chạy migrations rồi khởi động API. Migrations được theo dõi trong `schema_migrations` và có thể chạy lại an toàn.
+- Seed admin và dữ liệu sân mẫu không tự chạy khi service khởi động. Chạy `npm run db:seed:admin` một lần khi cần tạo/khởi tạo admin; đặt `ADMIN_EMAIL` và `ADMIN_PASSWORD` trong môi trường chạy seed.
+- `npm run db:seed:venues` chỉ dùng khi chủ động muốn thêm dữ liệu sân mẫu vào đúng database. Không chạy lệnh này với Neon production nếu không muốn tạo dữ liệu mẫu.
+- Sao lưu database trước khi chạy migration có thể thay đổi hoặc xóa dữ liệu.
+
 ## Cấu trúc hiện tại
 
 - apps/api: API NestJS.

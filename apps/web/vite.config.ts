@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   const isAdmin = mode === "admin";
   return {
     plugins: [react()],
-    base: isAdmin ? "/admin/" : "/",
+    base: "/",
     envDir: "../..",
     build: {
       outDir: "dist",
@@ -19,9 +19,9 @@ export default defineConfig(({ mode }) => {
           ? resolve(__dirname, "admin/index.html")
           : resolve(__dirname, "index.html"),
         output: {
-          entryFileNames: isAdmin ? "admin/assets/[name].module.js" : "assets/[name].module.js",
-          chunkFileNames: isAdmin ? "admin/assets/[name].module.js" : "assets/[name].module.js",
-          assetFileNames: isAdmin ? "admin/assets/[name][extname]" : "assets/[name][extname]",
+          entryFileNames: isAdmin ? "assets/admin.module.js" : "assets/index.module.js",
+          chunkFileNames: isAdmin ? "assets/admin-[name].module.js" : "assets/[name].module.js",
+          assetFileNames: isAdmin ? "assets/admin-[name][extname]" : "assets/[name][extname]",
         },
       },
     },

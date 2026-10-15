@@ -9,7 +9,7 @@
       "destination": "/admin/index.html"
     },
     {
-      "source": "/((?!assets/|admin/assets/).*)",
+      "source": "/((?!assets/).*)",
       "destination": "/index.html"
     }
   ]

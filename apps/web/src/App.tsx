@@ -296,7 +296,7 @@ function AuthPanel({ onSuccess, initialMode = 'login' }: {
           <button type="button" className={mode === 'business' ? 'active' : ''} onClick={() => { setMode('business'); setError(''); }}>Chủ sân</button>
         </div>
         <h2>{mode === 'login' ? 'Chào mừng trở lại' : mode === 'business' ? 'Đăng ký đối tác chủ sân' : 'Tạo tài khoản người chơi'}</h2>
-        <p className="muted">{mode === 'business' ? 'Gửi hồ sơ cụm sân để ban quản trị phê duyệt.' : 'Đăng nhập để đặt sân nhanh và nhận thông báo nhắc lịch.'}</p>
+        <p className="muted">{mode === 'business' ? 'Gửi hồ sơ cụm sân để ban quản trị phê duyệt.' : mode === 'customer' ? 'Tạo tài khoản để đặt sân nhanh và nhận thông báo nhắc lịch.' : 'Đăng nhập để đặt sân nhanh và nhận thông báo nhắc lịch.'}</p>
         <form className="stack-form" onSubmit={submit}>
           {mode !== 'login' && <label>Họ và tên<input name="fullName" autoComplete="name" minLength={2} maxLength={120} required placeholder="Nguyễn Minh Anh" /></label>}
           {mode === 'business' && <label>Tên doanh nghiệp / Cụm sân<input name="businessName" minLength={2} maxLength={160} required placeholder="VD: CLB Thể Thao Sao Vàng..." /></label>}
@@ -647,7 +647,7 @@ function ExplorePanel({ sports, user, onLogin, onOpenBookings, notify }: {
             <div className="hero-stamp">CHƠI<br />THÔI!</div>
           </section>
           <section className="search-panel">
-            <div className="search-head"><div><span className="eyebrow">KHÁM PHÁ</span><h2>Tìm sân phù hợp</h2></div><button className="location-button" disabled={locating} onClick={useLocation}><MapPin size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} /> <span>{locating ? 'Đang xác định vị trí…' : geo ? 'Đang sắp theo vị trí' : 'Gần vị trí của tôi'}</span></button></div>
+            <div className="search-head"><div><span className="eyebrow">KHÁM PHÁ</span><h2>Tìm sân phù hợp</h2></div><button className="location-button" disabled={locating} onClick={useLocation}><MapPin size={14} /> <span className="location-long">{locating ? 'Đang xác định vị trí…' : geo ? 'Đang sắp theo vị trí' : 'Gần vị trí của tôi'}</span><span className="location-short">{locating ? 'Đang tìm…' : geo ? 'Theo vị trí' : 'Gần tôi'}</span></button></div>
             <div className="sport-chips-bar" role="tablist" aria-label="Lọc theo môn thể thao">
               <button
                 type="button"

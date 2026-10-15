@@ -52,7 +52,7 @@ type Row = Record<string, any>;
 type Sport = { id: string; code: string; name: string; active?: boolean };
 type User = { id: string; email?: string | null; phone?: string | null; fullName?: string | null; platformRole: string };
 type Business = { id: string; display_name: string; status: string; membership_role: string; review_reason?: string | null };
-type View = 'discover' | 'community' | 'bookings' | 'owner' | 'account';
+type View = 'discover' | 'community' | 'bookings' | 'owner' | 'account' | 'admin';
 
 const statusText: Record<string, string> = {
   pending_review: 'Chờ duyệt', approved: 'Đã duyệt', rejected: 'Cần bổ sung',
@@ -345,6 +345,7 @@ function Header({ page, setPage, user, businesses, onSignOut, onAccount }: {
   businesses: Business[]; onSignOut: () => void; onAccount: (mode: 'login' | 'business') => void;
 }) {
   const hasOwner = businesses.length > 0;
+  const isAdmin = user?.platformRole === 'platform_admin';
   return (
     <>
       <header className={page === 'owner' ? 'topbar owner-topbar' : 'topbar'}>
@@ -354,9 +355,10 @@ function Header({ page, setPage, user, businesses, onSignOut, onAccount }: {
           <button className={page === 'community' ? 'current' : ''} onClick={() => setPage('community')}>Ghép kèo</button>
           {user && <button className={page === 'bookings' ? 'current' : ''} onClick={() => setPage('bookings')}>Lịch của tôi</button>}
           {hasOwner && <button className={page === 'owner' ? 'current' : ''} onClick={() => setPage('owner')}>Quản lý sân</button>}
+          {isAdmin && <button className={page === 'admin' ? 'current' : ''} onClick={() => setPage('admin')}>Quản trị nền tảng</button>}
         </nav>
         <div className="top-actions">
-          {user ? <><span className="user-chip"><span className="avatar">{(user.fullName || user.email || 'D').slice(0, 1).toUpperCase()}</span><span className="user-label">{user.fullName || user.email || 'Tài khoản'}</span></span><button className="button quiet small" onClick={onSignOut}>Đăng xuất</button></>
+          {user ? <><span className="user-chip"><span className="avatar">{(user.fullName || user.email || 'D').slice(0, 1).toUpperCase()}</span><span className="user-label">{user.fullName || user.email || 'Tài khoản'}{isAdmin ? ' (Admin)' : ''}</span></span><button className="button quiet small" onClick={onSignOut}>Đăng xuất</button></>
             : <><button className="button quiet small owner-link" onClick={() => onAccount('business')}>Đăng ký chủ sân</button><button className="button primary small" onClick={() => onAccount('login')}>Đăng nhập</button></>}
         </div>
       </header>
@@ -381,10 +383,16 @@ function Header({ page, setPage, user, businesses, onSignOut, onAccount }: {
             <span>Chủ sân</span>
           </button>
         )}
+        {isAdmin && (
+          <button className={page === 'admin' ? 'active' : ''} onClick={() => setPage('admin')}>
+            <span className="mobile-nav-icon"><ShieldCheck size={18} /></span>
+            <span>Admin</span>
+          </button>
+        )}
         <button
           className={page === 'account' ? 'active' : ''}
           onClick={() => {
-            if (user) setPage('bookings');
+            if (user) setPage(isAdmin ? 'admin' : 'bookings');
             else onAccount('login');
           }}
         >
@@ -1373,11 +1381,10 @@ export default function App() {
     api<Row[]>('/venues').then(setVenues).catch(() => setVenues([]));
     if (getAccessToken()) {
       api<User>('/auth/me').then((restoredUser) => {
-        if (restoredUser.platformRole === 'platform_admin') {
-          window.location.replace('/admin/');
-          return;
-        }
         setUser(restoredUser);
+        if (restoredUser.platformRole === 'platform_admin') {
+          setPage('admin');
+        }
       }).catch(() => setAccessToken(null));
     }
   }, []);
@@ -1398,11 +1405,12 @@ export default function App() {
 
   function loginSuccess(result: Row) {
     setAccessToken(result.accessToken);
+    setUser(result.user);
     if (result.user?.platformRole === 'platform_admin') {
-      window.location.assign('/admin/');
+      setPage('admin');
+      setNotice('Xin chào Quản trị viên!');
       return;
     }
-    setUser(result.user);
     setPage(result.business ? 'owner' : authReturnView);
     setNotice(result.business?.status === 'pending_review' ? 'Hồ sơ chủ sân đã gửi và đang chờ admin duyệt.' : 'Đăng nhập thành công.');
   }
@@ -1421,7 +1429,8 @@ export default function App() {
   }
 
   let content: ReactNode;
-  if (page === 'account') content = user ? <BookingPanel user={user} onUserUpdated={setUser} notify={notify} /> : <AuthPanel onSuccess={loginSuccess} initialMode={authMode} />;
+  if (page === 'admin' && user?.platformRole === 'platform_admin') content = <AdminPanel notify={notify} />;
+  else if (page === 'account') content = user ? <BookingPanel user={user} onUserUpdated={setUser} notify={notify} /> : <AuthPanel onSuccess={loginSuccess} initialMode={authMode} />;
   else if (page === 'community') content = <CommunityPanel sports={sports} user={user} onLogin={() => { setAuthMode('login'); setAuthReturnView('community'); setPage('account'); }} notify={notify} />;
   else if (page === 'bookings' && user) content = <BookingPanel user={user} onUserUpdated={setUser} notify={notify} />;
   else if (page === 'owner' && user && businesses.length) content = <OwnerPanel businesses={businesses} sports={sports} notify={notify} />;

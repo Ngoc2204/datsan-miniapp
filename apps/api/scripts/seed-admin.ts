@@ -7,8 +7,14 @@ config({ path: resolve(__dirname, '../../../.env') });
 
 async function seedAdmin(): Promise<void> {
   const email = (process.env.ADMIN_EMAIL || 'admin@datsan247.vn').trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD || 'Admin@12345678';
-  const connectionString = process.env.DATABASE_URL || '';
+  const password = process.env.ADMIN_PASSWORD;
+  const connectionString = process.env.DATABASE_URL;
+  if (!password || password.length < 12) {
+    throw new Error('ADMIN_PASSWORD must be set to a unique password of at least 12 characters');
+  }
+  if (!connectionString) {
+    throw new Error('DATABASE_URL is required');
+  }
   const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
   const useSsl = process.env.DATABASE_SSL === 'true' || (!isLocal && !connectionString.includes('sslmode=disable'));
   const pool = new Pool({

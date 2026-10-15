@@ -1,0 +1,30 @@
+{
+  "name": "datsan",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "npm run build:api && npm run build:web && npm run build:admin",
+    "dev:api": "npm run start:dev --workspace @datsan/api",
+    "dev:web": "npm run dev --workspace @datsan/web",
+    "build:api": "npm run build --workspace @datsan/api",
+    "build:web": "npm run build --workspace @datsan/web",
+    "build:admin": "npm run build:admin --workspace @datsan/web",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:migrate": "npm run db:migrate --workspace @datsan/api",
+    "db:seed:admin": "npm run db:seed:admin --workspace @datsan/api",
+    "db:seed:venues": "npm run db:seed:venues --workspace @datsan/api",
+    "test:explore": "npm run test:explore --workspace @datsan/api",
+    "test:mvp": "npm run test:mvp --workspace @datsan/api",
+    "zmp:login": "npm run zmp:login --workspace @datsan/web",
+    "zmp:start": "npm run zmp:start --workspace @datsan/web",
+    "zmp:deploy": "npm run zmp:deploy --workspace @datsan/web"
+  }
+}

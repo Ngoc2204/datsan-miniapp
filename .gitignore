@@ -1,0 +1,12 @@
+/.tailieu/
+node_modules/
+**/node_modules/
+**/dist/
+**/dist-admin/
+**/coverage/
+.env
+.env.*
+!.env.example
+npm-debug.log*
+.DS_Store
+*.tsbuildinfo

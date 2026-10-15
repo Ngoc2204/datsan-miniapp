@@ -1,0 +1,22 @@
+{
+  "app": {
+    "appId": "1112984425903181922",
+    "title": "datsan247",
+    "headerColor": "#11161d",
+    "headerTitle": "datsan247",
+    "textColor": "white",
+    "leftButton": "back",
+    "statusBar": "normal",
+    "actionBarHidden": false,
+    "hideAndroidBottomNavigationBar": true,
+    "hideIOSSafeAreaBottom": true
+  },
+  "debug": false,
+  "listCSS": [
+    "assets/style.css"
+  ],
+  "listSyncJS": [
+    "assets/index.module.js"
+  ],
+  "listAsyncJS": []
+}

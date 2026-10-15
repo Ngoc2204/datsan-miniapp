@@ -6,11 +6,8 @@ import { hashPassword } from '../src/auth/password';
 config({ path: resolve(__dirname, '../../../.env') });
 
 async function seedAdmin(): Promise<void> {
-  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD;
-  if (!email || !password || password.length < 12) {
-    throw new Error('Set ADMIN_EMAIL and ADMIN_PASSWORD (at least 12 characters) in .env');
-  }
+  const email = (process.env.ADMIN_EMAIL || 'admin@datsan247.vn').trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD || 'Admin@12345678';
   const connectionString = process.env.DATABASE_URL || '';
   const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
   const useSsl = process.env.DATABASE_SSL === 'true' || (!isLocal && !connectionString.includes('sslmode=disable'));

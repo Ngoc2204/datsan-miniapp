@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build && node -e \"require('node:fs').copyFileSync('app-config.json', 'dist/app-config.json')\"",
+    "build": "tsc -b && vite build && vite build --mode admin && node -e \"require('node:fs').copyFileSync('app-config.json', 'dist/app-config.json')\"",
     "build:admin": "tsc -b && vite build --mode admin",
     "preview": "vite preview --host 0.0.0.0",
     "zmp:login": "npx zmp-cli login",

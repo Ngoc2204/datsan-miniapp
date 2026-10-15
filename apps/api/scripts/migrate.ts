@@ -11,7 +11,12 @@ async function runMigrations(): Promise<void> {
     throw new Error('DATABASE_URL is required');
   }
 
-  const pool = new Pool({ connectionString });
+  const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
+  const useSsl = process.env.DATABASE_SSL === 'true' || (!isLocal && !connectionString.includes('sslmode=disable'));
+  const pool = new Pool({
+    connectionString,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+  });
   const migrationDirectory = resolve(__dirname, '../database/migrations');
 
   try {

@@ -12,6 +12,8 @@
   "scripts": {
     "build": "npm run build:api && npm run build:web && npm run build:admin",
     "dev:api": "npm run start:dev --workspace @datsan/api",
+    "start:api": "npm run start --workspace @datsan/api",
+    "start:render": "npm run db:migrate && npm run db:seed:venues && npm run start:api",
     "dev:web": "npm run dev --workspace @datsan/web",
     "build:api": "npm run build --workspace @datsan/api",
     "build:web": "npm run build --workspace @datsan/web",

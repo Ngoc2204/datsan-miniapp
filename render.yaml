@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: datsan-api
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install && npm run build:api
+    startCommand: npm run start:render
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "http://localhost:3000,http://localhost:5173,https://h5.zdn.vn"
+      - key: DEMO_HOLD_MINUTES
+        value: 10

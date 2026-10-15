@@ -19,9 +19,13 @@ export class DatabaseService implements OnApplicationShutdown {
       throw new Error('DATABASE_URL is required');
     }
 
+    const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
+    const useSsl = process.env.DATABASE_SSL === 'true' || (!isLocal && !connectionString.includes('sslmode=disable'));
+
     this.pool = new Pool({
       connectionString,
       max: Number(process.env.DATABASE_POOL_SIZE ?? 10),
+      ssl: useSsl ? { rejectUnauthorized: false } : undefined,
     });
   }
 

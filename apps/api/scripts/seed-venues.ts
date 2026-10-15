@@ -5,7 +5,13 @@ import { Pool } from 'pg';
 config({ path: resolve(__dirname, '../../../.env') });
 
 async function seedVenues(): Promise<void> {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const connectionString = process.env.DATABASE_URL || '';
+  const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
+  const useSsl = process.env.DATABASE_SSL === 'true' || (!isLocal && !connectionString.includes('sslmode=disable'));
+  const pool = new Pool({
+    connectionString,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+  });
   const client = await pool.connect();
 
   try {

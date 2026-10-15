@@ -11,7 +11,13 @@ async function seedAdmin(): Promise<void> {
   if (!email || !password || password.length < 12) {
     throw new Error('Set ADMIN_EMAIL and ADMIN_PASSWORD (at least 12 characters) in .env');
   }
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const connectionString = process.env.DATABASE_URL || '';
+  const isLocal = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
+  const useSsl = process.env.DATABASE_SSL === 'true' || (!isLocal && !connectionString.includes('sslmode=disable'));
+  const pool = new Pool({
+    connectionString,
+    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+  });
   try {
     const passwordHash = await hashPassword(password);
     await pool.query(

@@ -74,13 +74,13 @@ export default function AdminApp() {
     {checkingSession ? <main className="admin-login-screen admin-session-check" role="status"><div className="loading-spinner"></div><p>Đang khôi phục phiên đăng nhập…</p></main>
       : user ? <AdminPanel notify={notify} /> : <main className="admin-login-screen">
       <div className="admin-login-copy">
-        <span className="eyebrow light">DATSAN / PLATFORM CONTROL</span>
+        <span className="eyebrow light">DATSAN / ĐIỀU HÀNH NỀN TẢNG</span>
         <h1>Điều hành<br /><em>mọi trận đấu.</em></h1>
         <p>Trung tâm chỉ huy dành cho quản trị viên nền tảng. Duyệt chủ sân, kiểm duyệt địa điểm, cấu hình danh mục thể thao và theo dõi doanh thu toàn hệ thống.</p>
         <div className="admin-login-badges">
           <span><ShieldCheck size={14} /> Phân quyền đa tầng</span>
           <span><BarChart3 size={14} /> Biểu đồ 6 tháng</span>
-          <span><ScrollText size={14} /> Realtime Audit Log</span>
+          <span><ScrollText size={14} /> Nhật ký thao tác</span>
         </div>
       </div>
       <section className="card admin-login-card">
@@ -88,7 +88,7 @@ export default function AdminApp() {
         <h2>Chào mừng trở lại</h2>
         <p>Đăng nhập bằng tài khoản quản trị viên nền tảng.</p>
         <form className="stack-form" onSubmit={login}>
-          <label>Email admin<input name="email" type="email" autoComplete="username" defaultValue="admin@example.com" required placeholder="admin@example.com" /></label>
+          <label>Email admin<input name="email" type="email" autoComplete="username" required placeholder="admin@example.com" /></label>
           <label>
             Mật khẩu
             <div className="password-input-wrap">

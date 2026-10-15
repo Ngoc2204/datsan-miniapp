@@ -374,7 +374,7 @@ function Header({ page, setPage, user, businesses, onSignOut, onAccount }: {
         {user && (
           <button className={page === 'bookings' ? 'active' : ''} onClick={() => setPage('bookings')}>
             <span className="mobile-nav-icon"><Calendar size={18} /></span>
-            <span>Lịch của tôi</span>
+            <span>Lịch</span>
           </button>
         )}
         {hasOwner && (
@@ -397,7 +397,7 @@ function Header({ page, setPage, user, businesses, onSignOut, onAccount }: {
           }}
         >
           <span className="mobile-nav-icon"><User size={18} /></span>
-          <span>{user ? 'Cá nhân' : 'Tài khoản'}</span>
+          <span>Tài khoản</span>
         </button>
       </nav>
     </>

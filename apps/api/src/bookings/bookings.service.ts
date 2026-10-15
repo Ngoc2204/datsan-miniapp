@@ -94,13 +94,17 @@ export class BookingsService {
         );
         if (block.rows[0].blocked) throw new ConflictException('Sân đã bị khóa trong khung giờ này');
 
-        const account = await client.query<{ full_name: string | null; phone: string | null }>(
-          "SELECT full_name, phone FROM user_accounts WHERE id = $1 AND active = true",
+        const account = await client.query<{ full_name: string | null; phone: string | null; email: string | null }>(
+          "SELECT full_name, phone, email FROM user_accounts WHERE id = $1 AND active = true",
           [customerId],
         );
         if (!account.rows[0]) throw new NotFoundException('Không tìm thấy tài khoản khách hàng');
         const contactName = input.contactName || account.rows[0].full_name || 'Khách hàng';
         const contactPhone = input.contactPhone || account.rows[0].phone;
+        const contactEmail = input.contactEmail || account.rows[0].email;
+        if (!contactEmail) {
+          throw new BadRequestException('Vui lòng cung cấp email để nhận xác nhận và nhắc lịch đặt sân');
+        }
 
         const configuredHoldMinutes = Number(process.env.DEMO_HOLD_MINUTES ?? 10);
         const holdMinutes = Number.isFinite(configuredHoldMinutes)
@@ -116,7 +120,7 @@ export class BookingsService {
           "$8, $9, $10, $11, $12::jsonb, $3) RETURNING id, status, start_at, end_at",
           [
             setup.business_id, courtId, customerId, status, slot.start_at, slot.end_at, holdMinutes,
-            total, contactName, contactPhone, input.contactEmail ?? null, JSON.stringify(setup.cancellation_rules),
+            total, contactName, contactPhone, contactEmail, JSON.stringify(setup.cancellation_rules),
           ],
         );
         const booking = bookingResult.rows[0];

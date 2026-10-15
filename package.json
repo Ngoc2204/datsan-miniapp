@@ -25,6 +25,8 @@
     "db:seed:venues": "npm run db:seed:venues --workspace @datsan/api",
     "test:explore": "npm run test:explore --workspace @datsan/api",
     "test:mvp": "npm run test:mvp --workspace @datsan/api",
+    "mail:verify": "npm run mail:verify --workspace @datsan/api",
+    "test:notifications": "npm run test:notifications --workspace @datsan/api",
     "zmp:login": "npm run zmp:login --workspace @datsan/web",
     "zmp:start": "npm run zmp:start --workspace @datsan/web",
     "zmp:deploy": "npm run zmp:deploy --workspace @datsan/web"

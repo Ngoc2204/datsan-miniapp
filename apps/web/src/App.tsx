@@ -494,12 +494,17 @@ function ExplorePanel({ sports, user, onLogin, onOpenBookings, notify }: {
   async function book() {
     if (!user) { onLogin(); return; }
     if (!selected || !chosenCourt || !slot) return;
+    const recipientEmail = contactEmail.trim() || user.email?.trim() || '';
+    if (!recipientEmail) {
+      notify('Vui lòng nhập email để nhận xác nhận và nhắc lịch đặt sân.');
+      return;
+    }
     try {
       const result = await api<Row>('/bookings/courts/' + chosenCourt.id, {
         method: 'POST',
         body: jsonBody({
           date, startTime: slot.startTime, durationMinutes: Number(duration),
-          paymentMethod: payment, contactName, contactPhone, contactEmail: contactEmail || undefined,
+          paymentMethod: payment, contactName, contactPhone, contactEmail: recipientEmail,
         }),
       });
       notify(payment === 'demo' ? 'Đã giữ chỗ. Hoàn tất bước thanh toán thử nghiệm trong Lịch của tôi.' : 'Đặt sân thành công. Lịch đã được xác nhận.');
@@ -598,7 +603,7 @@ function ExplorePanel({ sports, user, onLogin, onOpenBookings, notify }: {
                     </span>
                     <input type="tel" value={contactPhone} onChange={(event) => setContactPhone(event.target.value)} required minLength={6} maxLength={30} placeholder="09xx xxx xxx" />
                   </label>
-                  <label className="wide">Email nhận xác nhận <span className="optional">không bắt buộc</span><input type="email" value={contactEmail} onChange={(event) => setContactEmail(event.target.value)} placeholder="ban@email.com" /></label>
+                  <label className="wide">Email nhận xác nhận và nhắc lịch<input type="email" autoComplete="email" required value={contactEmail} onChange={(event) => setContactEmail(event.target.value)} placeholder="ban@email.com" /><small>Sử dụng email tài khoản hoặc nhập địa chỉ khác để nhận thông tin đặt sân.</small></label>
                   <div className="wide">
                     <span className="control-label">PHƯƠNG THỨC THANH TOÁN</span>
                     <div className="payment-options-grid">

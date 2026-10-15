@@ -112,7 +112,7 @@ async function main() {
       });
       const bookingBody = {
         date, startTime: '18:00', durationMinutes: 60, paymentMethod: 'onsite',
-        contactName: 'Smoke Customer', contactPhone: '0900000000', contactEmail: 'smoke-customer@example.invalid',
+        contactName: 'Smoke Customer', contactPhone: '0900000000',
       };
       const booking = await request(`/bookings/courts/${courtId}`, 201, customer.accessToken, 'POST', bookingBody);
       assert.equal(booking.status, 'confirmed');
@@ -123,11 +123,12 @@ async function main() {
       assert.ok(ownerBookings.some((item: { id: string }) => item.id === booking.id));
       await request(`/owner/businesses/${businessId}/bookings?from=${date}&to=${date}`, 403, customer.accessToken);
 
-      const outbox = await setup.query<{ kind: string }>(
-        'SELECT kind FROM notification_outbox WHERE booking_id = $1', [booking.id],
+      const outbox = await setup.query<{ kind: string; recipient_email: string }>(
+        'SELECT kind, recipient_email FROM notification_outbox WHERE booking_id = $1', [booking.id],
       );
       assert.deepEqual(outbox.rows.map((row) => row.kind).sort(),
         ['booking_confirmation', 'reminder_24h', 'reminder_2h']);
+      assert.ok(outbox.rows.every((row) => row.recipient_email === 'smoke-customer@example.invalid'));
       await request(`/bookings/${booking.id}/cancel`, 201, customer.accessToken, 'POST');
       const reopened = await request(`/venues/${venueId}/courts/${courtId}/availability?date=${date}`, 200);
       assert.ok(reopened.slots.some((item: { startTime: string }) => item.startTime === '18:00'));
@@ -136,10 +137,19 @@ async function main() {
         ...bookingBody, paymentMethod: 'demo',
       });
       assert.equal(demo.status, 'pending_payment');
+      const pendingOutbox = await setup.query<{ count: number }>(
+        'SELECT count(*)::int AS count FROM notification_outbox WHERE booking_id = $1', [demo.id],
+      );
+      assert.equal(pendingOutbox.rows[0].count, 0);
       const paid = await request(`/bookings/${demo.id}/demo-payment`, 201, customer.accessToken, 'POST', {
         outcome: 'succeeded',
       });
       assert.equal(paid.status, 'confirmed');
+      const confirmedOutbox = await setup.query<{ kind: string }>(
+        'SELECT kind FROM notification_outbox WHERE booking_id = $1', [demo.id],
+      );
+      assert.deepEqual(confirmedOutbox.rows.map((row) => row.kind).sort(),
+        ['booking_confirmation', 'reminder_24h', 'reminder_2h']);
 
       const block = await request(`/owner/businesses/${businessId}/courts/${courtId}/blocks`, 201,
         owner.accessToken, 'POST', {

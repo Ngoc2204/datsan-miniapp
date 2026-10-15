@@ -90,7 +90,13 @@ Tài khoản admin chỉ được tạo bằng lệnh seed local; API đăng ký
 - GET /api/v1/bookings/mine, POST /api/v1/bookings/:bookingId/cancel: xem và hủy lịch của khách.
 - POST /api/v1/bookings/:bookingId/demo-payment: mô phỏng kết quả thanh toán demo.
 
-Email xác nhận và nhắc lịch được ghi vào PostgreSQL outbox trong cùng giao dịch booking. SMTP cấu hình qua SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD và MAIL_FROM; khi chưa cấu hình, email giữ ở trạng thái chờ.
+Email xác nhận và nhắc lịch được ghi vào PostgreSQL outbox trong cùng giao dịch booking. Backend gửi email xác nhận sau khi booking được xác nhận, sau đó nhắc trước 24 giờ và 2 giờ nếu thời điểm gửi còn ở tương lai. Địa chỉ nhập khi đặt sân được ưu tiên; nếu để trống, backend dùng email tài khoản khách. Nếu tài khoản không có email, khách cần nhập một địa chỉ email để tạo booking.
+
+SMTP cấu hình qua `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` và `MAIL_FROM`. Đặt các biến này trong `.env` khi chạy local và trong Render → API service → Environment khi chạy production; không commit mật khẩu hoặc gửi mật khẩu qua chat. `MAIL_FROM` phải là địa chỉ gửi đã được SMTP provider xác minh. Nếu SMTP chưa cấu hình, email vẫn nằm trong outbox và sẽ được xử lý sau khi cấu hình SMTP rồi khởi động lại API.
+
+Ví dụ dùng Gmail: `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER` là địa chỉ Gmail đầy đủ, `SMTP_PASSWORD` là App Password và `MAIL_FROM` dùng cùng địa chỉ gửi. Google yêu cầu bật xác minh 2 bước để tạo App Password; không dùng mật khẩu đăng nhập Gmail. Xem [hướng dẫn App Password của Google](https://support.google.com/accounts/answer/2461835) và [cấu hình SMTP Gmail](https://support.google.com/a/answer/176600).
+
+Chạy `rtk npm run mail:verify` để kiểm tra kết nối và xác thực SMTP từ máy local; lệnh này không gửi email. Chạy `rtk npm run test:notifications` để kiểm tra cấu hình và mẫu thư cục bộ.
 
 ## Ghép kèo cộng đồng
 

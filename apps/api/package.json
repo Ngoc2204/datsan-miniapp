@@ -11,7 +11,9 @@
     "db:seed:admin": "tsx scripts/seed-admin.ts",
     "db:seed:venues": "tsx scripts/seed-venues.ts",
     "test:explore": "tsx scripts/test-explore-search.ts",
-    "test:mvp": "npm run build && tsx scripts/test-mvp-flow.ts"
+    "test:mvp": "npm run build && tsx scripts/test-mvp-flow.ts",
+    "mail:verify": "tsx scripts/verify-smtp.ts",
+    "test:notifications": "tsx scripts/test-notifications.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

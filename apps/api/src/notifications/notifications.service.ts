@@ -1,16 +1,21 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
 import { DatabaseService } from '../database/database.service';
+import { buildBookingEmail, BookingNotificationKind } from './booking-email';
+import { readMailConfiguration } from './mail-config';
 
 type OutboxRow = { id: string; business_id: string; booking_id: string; recipient_email: string; kind: string; attempts: number };
 type MessageRow = {
   status: string;
   start_at: Date;
+  end_at: Date;
   venue_name: string;
   address: string;
   court_name: string;
   contact_name: string | null;
   timezone: string;
+  quoted_total: string;
+  currency: string;
 };
 
 @Injectable()
@@ -19,19 +24,13 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   private timer?: ReturnType<typeof setInterval>;
   private busy = false;
   private readonly transporter?: Transporter;
+  private readonly from?: string;
 
   constructor(private readonly database: DatabaseService) {
-    const host = process.env.SMTP_HOST;
-    if (host) {
-      const port = Number(process.env.SMTP_PORT ?? 587);
-      this.transporter = createTransport({
-        host,
-        port,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: process.env.SMTP_USER
-          ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD ?? '' }
-          : undefined,
-      });
+    const config = readMailConfiguration();
+    if (config) {
+      this.from = config.from;
+      this.transporter = createTransport(config.transport);
     }
   }
 
@@ -40,12 +39,16 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       this.logger.warn('SMTP chưa cấu hình; email được giữ trong outbox.');
       return;
     }
+    void this.transporter.verify()
+      .then(() => this.logger.log('SMTP đã kết nối và xác thực thành công.'))
+      .catch(() => this.logger.error('Không xác thực được SMTP; email sẽ tiếp tục được thử lại theo hàng đợi.'));
     this.timer = setInterval(() => void this.deliverBatch(), 15_000);
     void this.deliverBatch();
   }
 
   onModuleDestroy() {
     if (this.timer) clearInterval(this.timer);
+    this.transporter?.close();
   }
 
   private async deliverBatch() {
@@ -76,7 +79,8 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 
   private async deliverOne(item: OutboxRow) {
     const message = await this.database.query<MessageRow>(
-      'SELECT b.status, b.start_at, v.name AS venue_name, v.address, v.timezone, c.name AS court_name, b.contact_name ' +
+      'SELECT b.status, b.start_at, b.end_at, b.quoted_total::text, b.currency, ' +
+      'v.name AS venue_name, v.address, v.timezone, c.name AS court_name, b.contact_name ' +
       'FROM bookings b JOIN courts c ON c.id = b.court_id AND c.business_id = b.business_id ' +
       'JOIN venues v ON v.id = c.venue_id AND v.business_id = c.business_id ' +
       'WHERE b.id = $1 AND b.business_id = $2',
@@ -91,31 +95,25 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
       return;
     }
 
-    const dateText = new Intl.DateTimeFormat('vi-VN', {
-      timeZone: booking.timezone,
-      dateStyle: 'full',
-      timeStyle: 'short',
-    }).format(booking.start_at);
-    const isReminder = item.kind.startsWith('reminder');
-    const subject = isReminder
-      ? 'DatSan | Nhắc lịch chơi sắp tới'
-      : 'DatSan | Đặt sân đã xác nhận';
-    const text = [
-      'Xin chào ' + (booking.contact_name || 'bạn') + ',',
-      isReminder ? 'Đây là lời nhắc lịch chơi của bạn.' : 'Lịch đặt sân của bạn đã được xác nhận.',
-      'Địa điểm: ' + booking.venue_name,
-      'Địa chỉ: ' + booking.address,
-      'Sân: ' + booking.court_name,
-      'Thời gian: ' + dateText,
-      'Mã đặt chỗ: ' + item.booking_id,
-    ].join('\n');
+    const email = buildBookingEmail({
+      kind: item.kind as BookingNotificationKind,
+      bookingId: item.booking_id,
+      contactName: booking.contact_name,
+      venueName: booking.venue_name,
+      address: booking.address,
+      courtName: booking.court_name,
+      startAt: booking.start_at,
+      endAt: booking.end_at,
+      timezone: booking.timezone,
+      total: booking.quoted_total,
+      currency: booking.currency,
+    });
 
     try {
       await this.transporter!.sendMail({
-        from: process.env.MAIL_FROM ?? process.env.SMTP_USER,
+        from: this.from,
         to: item.recipient_email,
-        subject,
-        text,
+        ...email,
       });
       await this.database.query(
         "UPDATE notification_outbox SET status = 'sent', sent_at = now(), last_error = NULL, updated_at = now() WHERE id = $1",

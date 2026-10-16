@@ -97,13 +97,23 @@ export class AuthService {
     let profile: { id?: string; name?: string };
     if (process.env.NODE_ENV !== 'production' && input.accessToken.startsWith('demo_zalo_')) {
       const payload = input.accessToken.replace('demo_zalo_', '');
+      let name = 'Người dùng Zalo (Demo)';
+      if (payload.split('_')[1]) {
+        try {
+          name = decodeURIComponent(payload.split('_')[1]);
+        } catch {
+          // Keep the safe demo name for a malformed local token.
+        }
+      }
       profile = {
         id: 'zalo_dev_' + (payload.split('_')[0] || '123456789'),
-        name: payload.split('_')[1] ? decodeURIComponent(payload.split('_')[1]) : 'Người dùng Zalo (Demo)',
+        name,
       };
     } else {
       const url = new URL('https://graph.zalo.me/v2.0/me');
-      url.searchParams.set('fields', 'id,name');
+      // The default Mini App access token is enough to identify the user. Avoid
+      // requesting profile fields that require an additional userInfo scope.
+      url.searchParams.set('fields', 'id');
       url.searchParams.set('access_token', input.accessToken);
       let response: Response;
       try {
@@ -112,10 +122,21 @@ export class AuthService {
         throw new ServiceUnavailableException('Không kết nối được dịch vụ xác thực Zalo');
       }
       if (!response.ok) throw new UnauthorizedException('Access token Zalo không hợp lệ');
-      profile = await response.json() as { id?: string; name?: string };
-      if (!profile.id || !/^[A-Za-z0-9_-]{1,160}$/.test(profile.id)) {
+
+      let responseProfile: unknown;
+      try {
+        responseProfile = await response.json();
+      } catch {
         throw new UnauthorizedException('Zalo không trả về hồ sơ người dùng hợp lệ');
       }
+      const data = responseProfile && typeof responseProfile === 'object'
+        ? responseProfile as { id?: unknown; name?: unknown }
+        : {};
+      const id = typeof data.id === 'string' || typeof data.id === 'number' ? String(data.id) : '';
+      if (!/^[A-Za-z0-9_-]{1,160}$/.test(id)) {
+        throw new UnauthorizedException('Zalo không trả về hồ sơ người dùng hợp lệ');
+      }
+      profile = { id, name: typeof data.name === 'string' ? data.name : undefined };
     }
 
     const result = await this.database.query<AccountRow>(
@@ -169,7 +190,7 @@ export class AuthService {
     }
 
     if (!phoneNumber) {
-      if (input.token.startsWith('demo_phone_')) {
+      if (process.env.NODE_ENV !== 'production' && input.token.startsWith('demo_phone_')) {
         phoneNumber = input.token.replace('demo_phone_', '');
       } else if (process.env.NODE_ENV !== 'production') {
         phoneNumber = '0988776655';

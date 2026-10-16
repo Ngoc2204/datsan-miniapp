@@ -26,6 +26,7 @@
     "test:explore": "npm run test:explore --workspace @datsan/api",
     "test:mvp": "npm run test:mvp --workspace @datsan/api",
     "mail:verify": "npm run mail:verify --workspace @datsan/api",
+    "test:zalo-auth": "npm run test:zalo-auth --workspace @datsan/api",
     "test:notifications": "npm run test:notifications --workspace @datsan/api",
     "zmp:login": "npm run zmp:login --workspace @datsan/web",
     "zmp:start": "npm run zmp:start --workspace @datsan/web",

@@ -332,6 +332,9 @@ function AuthPanel({ onSuccess, initialMode = 'login' }: {
             <span className="zalo-mark">Z</span> Tiếp tục với tài khoản Zalo
           </button>
         )}
+        {mode !== 'business' && !error && !isZaloMiniApp() && !import.meta.env.DEV && (
+          <p className="fine-print">Hãy mở Mini App DatSan trong ứng dụng Zalo để đăng nhập bằng Zalo.</p>
+        )}
         {error && <p className="form-error" role="alert">{error}</p>}
         {mode === 'login' && <p className="fine-print"><a href="/admin/">Cổng quản trị viên nền tảng <ArrowRight size={13} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: 2 }} /></a></p>}
         <p className="fine-print">Thông tin của bạn được bảo mật tuyệt đối theo tiêu chuẩn DatSan.</p>

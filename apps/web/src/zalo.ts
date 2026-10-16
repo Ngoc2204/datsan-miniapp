@@ -114,8 +114,10 @@ export async function getZaloLocation(): Promise<GeoCoordinates> {
 /**
  * Retrieve Zalo access token.
  * Inside Zalo Mini App: calls native zmp-sdk getAccessToken().
- * In local development or desktop browser: generates a simulated dev token
- * (`demo_zalo_...`) so developers and testers can verify the complete login flow.
+ * In local development outside Zalo: generates a simulated dev token
+ * (`demo_zalo_...`) so developers can verify the complete login flow.
+ * Production web browsers must use the Zalo Mini App runtime and never receive
+ * a fabricated token.
  */
 export async function getZaloAccessToken(): Promise<string> {
   if (isZaloMiniApp()) {
@@ -123,18 +125,21 @@ export async function getZaloAccessToken(): Promise<string> {
       const result = await zmpGetAccessToken();
       if (typeof result === 'string' && result.length > 0) return result;
       const res = result as unknown as { accessToken?: string; token?: string };
-      if (res?.accessToken || res?.token) return res.accessToken || res.token || '';
+      const token = res?.accessToken || res?.token;
+      if (typeof token === 'string' && token.length > 0) return token;
     } catch (cause) {
       console.warn('Zalo Mini App getAccessToken failed:', cause);
     }
+
+    throw new Error('Không lấy được quyền đăng nhập Zalo. Hãy mở lại Mini App DatSan trong ứng dụng Zalo.');
   }
 
-  // Development & desktop browser fallback
-  if (import.meta.env.DEV || !isZaloMiniApp()) {
+  // Local development fallback only. Never send a fabricated identity in production.
+  if (import.meta.env.DEV) {
     return 'demo_zalo_devuser_' + encodeURIComponent('Người dùng Zalo');
   }
 
-  throw new Error('Vui lòng mở ứng dụng trong Zalo Mini App để đăng nhập.');
+  throw new Error('Đăng nhập Zalo chỉ hoạt động khi mở Mini App DatSan bên trong ứng dụng Zalo.');
 }
 
 /**
@@ -156,10 +161,14 @@ export async function getZaloUserInfo(): Promise<ZaloUserProfile | null> {
     }
   }
 
-  return {
-    id: 'demo_zalo_dev',
-    name: 'Người dùng Zalo',
-  };
+  if (import.meta.env.DEV) {
+    return {
+      id: 'demo_zalo_dev',
+      name: 'Người dùng Zalo',
+    };
+  }
+
+  return null;
 }
 
 /**
@@ -185,19 +194,26 @@ export async function getZaloPhoneNumber(
       }
     } catch (cause) {
       console.warn('zmpGetPhoneNumber error:', cause);
+      if (!import.meta.env.DEV) {
+        throw new Error('Không lấy được số điện thoại từ Zalo. Hãy kiểm tra quyền truy cập rồi thử lại.');
+      }
     }
   }
 
-  // Web / local dev fallback
-  try {
-    const payload = await apiCaller<{ phone: string }>('/auth/zalo/phone', {
-      method: 'POST',
-      body: JSON.stringify({ token: 'demo_phone_0988776655' }),
-    });
-    if (payload?.phone) return payload.phone;
-  } catch {
-    // If API unavailable, return standard fallback
+  // Local development fallback only. Never populate customer profiles with a
+  // fabricated phone number in production or a regular web browser.
+  if (import.meta.env.DEV) {
+    try {
+      const payload = await apiCaller<{ phone: string }>('/auth/zalo/phone', {
+        method: 'POST',
+        body: JSON.stringify({ token: 'demo_phone_0988776655' }),
+      });
+      if (payload?.phone) return payload.phone;
+    } catch {
+      // Keep a local fallback when the API is unavailable during development.
+    }
+    return '0988776655';
   }
 
-  return '0988776655';
+  throw new Error('Lấy số điện thoại Zalo chỉ hoạt động khi mở Mini App DatSan trong ứng dụng Zalo.');
 }

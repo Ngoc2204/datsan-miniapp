@@ -12,6 +12,7 @@
     "db:seed:venues": "tsx scripts/seed-venues.ts",
     "test:explore": "tsx scripts/test-explore-search.ts",
     "test:mvp": "npm run build && tsx scripts/test-mvp-flow.ts",
+    "test:zalo-auth": "tsx scripts/test-zalo-auth.ts",
     "mail:verify": "tsx scripts/verify-smtp.ts",
     "test:notifications": "tsx scripts/test-notifications.ts"
   },

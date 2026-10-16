@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
   const isAdmin = mode === "admin";
   return {
     plugins: [react()],
-    base: "/",
+    base: "./",
     envDir: "../..",
     build: {
       outDir: "dist",

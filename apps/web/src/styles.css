@@ -1,5 +1,5 @@
 :root {
-  font-family: 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   color: #19241f;
   background: #f4f6f2;
   font-synthesis: none;
@@ -18,7 +18,9 @@
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; min-width: 0; min-height: 100vh; }
+html { width: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; width: 100%; min-width: 0; min-height: 100vh; }
+#app, #admin-app { width: 100%; min-width: 0; }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 button:disabled { opacity: .55; cursor: not-allowed; }
@@ -54,7 +56,7 @@ a { color: inherit; }
 .brand, .footer-brand { display: inline-flex; align-items: center; gap: 10px; color: var(--green); font-weight: 800; font-size: 18px; letter-spacing: -.7px; border: 0; padding: 0; background: transparent; text-align: left; }
 .brand small, .footer-brand small { display: block; font: 600 11px 'DM Mono', monospace; letter-spacing: 1.2px; color: #76837b; margin-top: 1px; }
 .brand-icon { width: 36px; height: 36px; display: grid; place-items: center; color: var(--green); background: var(--lime); border-radius: 12px 12px 12px 3px; font-size: 21px; font-weight: 800; }
-.brand-logo { display: block; width: 42px; height: 42px; flex: 0 0 auto; border-radius: 12px; background-color: #fff; background-image: url('/datsan247-logo.png'); background-position: center top; background-repeat: no-repeat; background-size: 180% 180%; }
+.brand-logo { display: block; width: 42px; height: 42px; flex: 0 0 auto; border-radius: 12px; background-color: #fff; background-image: url('./assets/datsan247-logo.png'); background-position: center top; background-repeat: no-repeat; background-size: 180% 180%; }
 .admin-brand .brand-logo { width: 40px; height: 40px; }
 .footer-brand .brand-logo { width: 34px; height: 34px; }
 .footer-signature { color: #526258; font-weight: 600; }
@@ -132,14 +134,16 @@ a { color: inherit; }
 .search-head h2, .results-head h2, .section-heading h2, .page-title-row h1 { margin: 0; color: var(--ink); font-size: 24px; letter-spacing: -1px; line-height: 1.25; }
 .location-button { display: inline-flex; align-items: center; gap: 7px; color: var(--green-2); background: #f2f7ec; border: 1px solid #e1ebd6; border-radius: 99px; padding: 9px 14px; font-size: 12px; font-weight: 800; white-space: nowrap; }
 .location-button .location-short { display: none; }
-.search-controls { display: grid; grid-template-columns: 1.3fr .85fr .85fr; gap: 12px; margin-top: 22px; }
+.search-controls { display: grid; grid-template-columns: minmax(0, 1.3fr) repeat(2, minmax(0, .85fr)); gap: 12px; margin-top: 22px; }
 .search-controls label:not(.search-input), .search-input { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.search-controls > label { min-width: 0; }
 .control-label { color: #44584c; font: 700 12px 'DM Mono', monospace; letter-spacing: .6px; text-transform: uppercase; }
 .search-input { flex-direction: row; align-items: center; gap: 10px; padding: 0 13px; border: 1px solid #e0e6df; border-radius: 9px; color: #78857c; }
 .search-input > span { font-size: 21px; }
 .search-input input { min-width: 0; flex: 1; border: 0; padding-left: 0; font-size: 14px; }
 label { color: #37463e; font-size: 13px; font-weight: 700; }
-input, select, textarea { width: 100%; min-height: 44px; padding: 10px 14px; color: var(--ink); border: 1px solid #dce4dc; border-radius: 9px; outline: none; background: #fcfdfb; font-size: 14px; transition: border-color .16s, box-shadow .16s; }
+input, select, textarea { width: 100%; min-width: 0; max-width: 100%; min-height: 44px; padding: 10px 14px; color: var(--ink); border: 1px solid #dce4dc; border-radius: 9px; outline: none; background: #fcfdfb; font-size: 14px; transition: border-color .16s, box-shadow .16s; }
+input[type='date'], input[type='time'], input[type='datetime-local'] { min-width: 0; max-width: 100%; }
 input:focus, select:focus, textarea:focus { border-color: #72917e; box-shadow: 0 0 0 3px rgba(100, 138, 111, .1); }
 input::placeholder, textarea::placeholder { color: #8e9a91; }
 .search-input input { min-height: 44px; border: 0; box-shadow: none !important; background: transparent; }
@@ -195,7 +199,7 @@ input::placeholder, textarea::placeholder { color: #8e9a91; }
 .step-bubble { padding: 6px 11px; border-radius: 99px; color: #5f7064; background: #f1f4ef; font: 700 11px 'DM Mono', monospace; }
 .form-grid { display: grid; gap: 12px; }
 .form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.form-grid label { display: flex; flex-direction: column; gap: 6px; }
+.form-grid label { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .form-grid .wide { grid-column: 1 / -1; }
 .date-note { display: flex; align-items: center; gap: 9px; align-self: end; min-height: 44px; color: #6e7d73; font-size: 12px; line-height: 1.4; }
 .spark { color: #6c8f5d; font-size: 19px; }
@@ -546,11 +550,12 @@ input::placeholder, textarea::placeholder { color: #8e9a91; }
   .location-button { padding: 9px 13px; font-size: 12px; border-radius: 99px; }
   .location-button .location-long { display: none; }
   .location-button .location-short { display: inline; }
-  .search-controls { grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .search-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
   .search-input { grid-column: 1 / -1; min-height: 46px; }
   .search-input input { min-height: 44px; font-size: 15px; }
   .search-controls label { font-size: 12px; }
-  .search-controls select, .search-controls input { min-height: 46px; padding: 10px 12px; font-size: 15px; }
+  .search-controls select, .search-controls input { min-height: 46px; min-width: 0; padding: 10px 12px; font-size: 15px; }
+  .search-controls input[type='date'], .search-controls input[type='time'], .form-grid input[type='date'], .form-grid input[type='time'], .stack-form input[type='datetime-local'] { min-width: 0; width: 100%; max-width: 100%; padding-right: 8px; padding-left: 8px; font-size: 16px; }
   .control-label { font-size: 11px; font-weight: 800; letter-spacing: .5px; color: #43584c; }
   .results-section { margin-bottom: 25px; }
   .results-head { align-items: flex-end; margin-bottom: 14px; }

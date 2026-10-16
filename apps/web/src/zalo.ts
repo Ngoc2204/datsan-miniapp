@@ -24,10 +24,9 @@ export type ZaloUserProfile = {
 export function isZaloMiniApp(): boolean {
   if (typeof window === 'undefined') return false;
   try {
-    const ua = window.navigator?.userAgent?.toLowerCase() || '';
-    if (ua.includes('zalo') || ua.includes('zmp')) return true;
-    if (window.location.hostname.includes('zdn.vn') || window.location.hostname.includes('zalo.me')) return true;
-    if (new URL(window.location.href).searchParams.get('env') === 'TESTING_LOCAL') return true;
+    const { hostname, pathname, search } = window.location;
+    const isLocalDevicePreview = new URLSearchParams(search).get('env') === 'TESTING_LOCAL';
+    if (hostname.includes('h5.zdn.vn') && (pathname.startsWith('/zapps/') || isLocalDevicePreview)) return true;
     const win = window as unknown as { ZaloMiniAppSDK?: unknown; zAppID?: unknown; APP_ID?: unknown };
     if (win.ZaloMiniAppSDK || win.zAppID || win.APP_ID) return true;
   } catch {
@@ -129,9 +128,28 @@ export async function getZaloAccessToken(): Promise<string> {
       if (typeof token === 'string' && token.length > 0) return token;
     } catch (cause) {
       console.warn('Zalo Mini App getAccessToken failed:', cause);
+      const detail = cause instanceof Error
+        ? cause.message
+        : typeof cause === 'string'
+          ? cause
+          : cause && typeof cause === 'object'
+            ? String((cause as { message?: unknown; errorMessage?: unknown }).message || (cause as { errorMessage?: unknown }).errorMessage || '')
+            : '';
+      if (/user authentication required/i.test(detail)) {
+        throw new Error('Zalo chưa cấp quyền xác thực người dùng cho Mini App. Hãy thử đăng nhập lại và chấp nhận yêu cầu quyền nếu Zalo hiển thị.');
+      }
+      if (/zalo app has not been activated/i.test(detail)) {
+        throw new Error('Mini App chưa được kích hoạt để đăng nhập Zalo. Hãy kiểm tra trạng thái kích hoạt trong Mini App Center.');
+      }
+      if (/not called from mini app|not supported in this version|getaccesstoken/i.test(detail)) {
+        throw new Error(`Zalo SDK không lấy được access token${detail ? ` (${detail})` : ''}. Hãy mở QR Development mới nhất trong ứng dụng Zalo.`);
+      }
+      if (detail) {
+        throw new Error(`Zalo từ chối cấp token đăng nhập (${detail}). Hãy mở QR Development mới nhất trong ứng dụng Zalo rồi thử lại.`);
+      }
     }
 
-    throw new Error('Không lấy được quyền đăng nhập Zalo. Hãy mở lại Mini App DatSan trong ứng dụng Zalo.');
+    throw new Error('Zalo không trả access token đăng nhập. Hãy mở QR Development mới nhất trong ứng dụng Zalo rồi thử lại.');
   }
 
   // Local development fallback only. Never send a fabricated identity in production.

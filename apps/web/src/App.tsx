@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { divIcon, type LatLngExpression } from 'leaflet';
@@ -1375,6 +1375,7 @@ export function AdminPanel({ notify }: { notify: (message: string) => void }) {
 
 export default function App() {
   const [page, setPage] = useState<View>('discover');
+  const mainScrollRef = useRef<HTMLDivElement>(null);
   const [authMode, setAuthMode] = useState<'login' | 'customer' | 'business'>('login');
   const [authReturnView, setAuthReturnView] = useState<View>('discover');
   const [user, setUser] = useState<User | null>(null);
@@ -1382,6 +1383,11 @@ export default function App() {
   const [sports, setSports] = useState<Sport[]>([]);
   const [notice, setNotice] = useState('');
   const [venues, setVenues] = useState<Row[]>([]);
+
+  useEffect(() => {
+    mainScrollRef.current?.scrollTo(0, 0);
+    window.scrollTo(0, 0);
+  }, [page]);
 
   useEffect(() => {
     void initZaloHeader();
@@ -1446,7 +1452,7 @@ export default function App() {
 
   return <div className="app-shell">
     <Header page={page} setPage={setPage} user={user} businesses={businesses} onSignOut={signOut} onAccount={(mode) => { setAuthMode(mode); setAuthReturnView('discover'); setPage('account'); }} />
-    <div className="app-main-scroll">
+    <div className="app-main-scroll" ref={mainScrollRef}>
       {notice && <div className="toast" role="status"><Sparkles size={16} className="toast-sparkle" /><span>{notice}</span><button aria-label="Đóng" onClick={() => setNotice('')}><X size={14} /></button></div>}
       {content}
       <footer className="site-footer"><div className="footer-brand"><span className="brand-logo" aria-hidden="true" /><span>datsan247<small>CHƠI THỂ THAO CÙNG NHAU</small></span></div><span>© {new Date().getFullYear()} datsan247</span><span className="footer-signature">Phát triển bởi Nguyễn Tất Ngọc</span><span>Tìm sân · Tạo trận · Vào cuộc</span></footer>

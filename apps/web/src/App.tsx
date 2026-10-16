@@ -1446,9 +1446,10 @@ export default function App() {
 
   return <div className="app-shell">
     <Header page={page} setPage={setPage} user={user} businesses={businesses} onSignOut={signOut} onAccount={(mode) => { setAuthMode(mode); setAuthReturnView('discover'); setPage('account'); }} />
-    {notice && <div className="toast" role="status"><Sparkles size={16} className="toast-sparkle" /><span>{notice}</span><button aria-label="Đóng" onClick={() => setNotice('')}><X size={14} /></button></div>}
-    {content}
-    <footer className="site-footer"><div className="footer-brand"><span className="brand-logo" aria-hidden="true" /><span>datsan247<small>CHƠI THỂ THAO CÙNG NHAU</small></span></div><span>© {new Date().getFullYear()} datsan247</span><span className="footer-signature">Phát triển bởi Nguyễn Tất Ngọc</span><span>Tìm sân · Tạo trận · Vào cuộc</span></footer>
-    <nav className="mobile-nav-spacer" aria-hidden="true"></nav>
+    <div className="app-main-scroll">
+      {notice && <div className="toast" role="status"><Sparkles size={16} className="toast-sparkle" /><span>{notice}</span><button aria-label="Đóng" onClick={() => setNotice('')}><X size={14} /></button></div>}
+      {content}
+      <footer className="site-footer"><div className="footer-brand"><span className="brand-logo" aria-hidden="true" /><span>datsan247<small>CHƠI THỂ THAO CÙNG NHAU</small></span></div><span>© {new Date().getFullYear()} datsan247</span><span className="footer-signature">Phát triển bởi Nguyễn Tất Ngọc</span><span>Tìm sân · Tạo trận · Vào cuộc</span></footer>
+    </div>
   </div>;
 }

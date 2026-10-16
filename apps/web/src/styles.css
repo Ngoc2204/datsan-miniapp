@@ -26,6 +26,7 @@ button { cursor: pointer; }
 button:disabled { opacity: .55; cursor: not-allowed; }
 a { color: inherit; }
 .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+.app-main-scroll { min-width: 0; flex: 1; display: flex; flex-direction: column; }
 .admin-portal { background: #f0f3ed; }
 .admin-header { background: var(--green); color: white; }
 .admin-header-inner { width: min(1240px, calc(100% - 48px)); min-height: 76px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
@@ -529,13 +530,16 @@ input::placeholder, textarea::placeholder { color: #8e9a91; }
   .top-actions { margin-left: auto; }
   .top-actions .owner-link, .top-actions .user-chip { display: none; }
   .top-actions .button { min-height: 38px; padding: 0 14px; font-size: 12px; }
-  .mobile-nav { position: fixed; z-index: 25; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-around; align-items: stretch; min-height: calc(64px + env(safe-area-inset-bottom)); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); border-top: 1px solid #e3e9e2; background: rgba(251, 252, 249, .96); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 -4px 20px rgba(20,40,30,.06); }
+  .app-shell { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; }
+  .topbar { order: 0; flex: 0 0 auto; }
+  .app-main-scroll { order: 1; flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }
+  .mobile-nav { position: relative; z-index: 25; inset: auto; order: 2; flex: 0 0 auto; display: flex; justify-content: space-around; align-items: stretch; min-height: calc(64px + env(safe-area-inset-bottom)); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); border-top: 1px solid #e3e9e2; background: #fbfcf9; box-shadow: 0 -4px 20px rgba(20,40,30,.06); }
   .mobile-nav button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 0; border: 0; color: #5a6e5f; background: transparent; font-size: 12px; font-weight: 700; border-radius: 8px; padding: 4px 0; }
   .mobile-nav button .mobile-nav-icon { font-size: 19px; line-height: 1; }
   .mobile-nav button > span:not(.mobile-nav-icon) { font-size: 11px; line-height: 1.2; white-space: nowrap; }
   .mobile-nav button.active { color: var(--green); }
   .mobile-nav button.active span { color: #3c6139; }
-  .mobile-nav-spacer { display: block; height: calc(68px + env(safe-area-inset-bottom)); flex: 0 0 auto; }
+  .mobile-nav-spacer { display: none; }
   .page-wrap { width: calc(100% - 24px); padding: 18px 0 28px; }
   .hero { min-height: 275px; display: block; padding: 28px 20px; margin: 0 0 16px; border-radius: 16px; }
   .hero h1 { font-size: clamp(34px, 9vw, 44px); letter-spacing: -2px; }

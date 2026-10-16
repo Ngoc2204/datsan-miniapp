@@ -54,6 +54,10 @@ a { color: inherit; }
 .brand, .footer-brand { display: inline-flex; align-items: center; gap: 10px; color: var(--green); font-weight: 800; font-size: 18px; letter-spacing: -.7px; border: 0; padding: 0; background: transparent; text-align: left; }
 .brand small, .footer-brand small { display: block; font: 600 11px 'DM Mono', monospace; letter-spacing: 1.2px; color: #76837b; margin-top: 1px; }
 .brand-icon { width: 36px; height: 36px; display: grid; place-items: center; color: var(--green); background: var(--lime); border-radius: 12px 12px 12px 3px; font-size: 21px; font-weight: 800; }
+.brand-logo { display: block; width: 42px; height: 42px; flex: 0 0 auto; border-radius: 12px; background-color: #fff; background-image: url('/datsan247-logo.png'); background-position: center top; background-repeat: no-repeat; background-size: 180% 180%; }
+.admin-brand .brand-logo { width: 40px; height: 40px; }
+.footer-brand .brand-logo { width: 34px; height: 34px; }
+.footer-signature { color: #526258; font-weight: 600; }
 .top-nav { align-self: stretch; display: flex; gap: 28px; align-items: center; }
 .top-nav button { height: 100%; background: transparent; border: 0; color: #58655e; font-size: 14px; font-weight: 700; position: relative; }
 .top-nav button.current { color: var(--green); }
@@ -85,6 +89,7 @@ a { color: inherit; }
 .text-button:hover { color: var(--green); text-decoration: underline; }
 .danger-text { color: var(--red); }
 .eyebrow { display: block; margin: 0 0 8px; color: #5d6e64; font: 700 11px 'DM Mono', monospace; letter-spacing: 1.1px; text-transform: uppercase; }
+.brand-case { text-transform: none; }
 .eyebrow.light { color: #c0cfc5; }
 .admin-login-copy .eyebrow.light { color: #607a68; }
 .muted { color: var(--muted); font-size: 13px; line-height: 1.65; }
@@ -798,7 +803,7 @@ input::placeholder, textarea::placeholder { color: #8e9a91; }
   .admin-header-inner { width: calc(100% - 24px); min-height: 62px; margin-top: 12px; padding: 0 12px; border-radius: 14px; }
   .admin-header-actions { gap: 8px; font-size: 12px; }
   .admin-brand { gap: 8px; font-size: 16px; }
-  .admin-brand .brand-icon { width: 32px; height: 32px; }
+  .admin-brand .brand-icon, .admin-brand .brand-logo { width: 32px; height: 32px; }
   .admin-page-heading h1 { font-size: 28px; }
   .admin-chart-grid, .owner-dashboard-grid, .admin-overview-grid { grid-template-columns: minmax(0, 1fr); }
   .admin-chart-card, .admin-overview-card, .owner-chart-card { padding: 16px 14px; }
@@ -908,7 +913,7 @@ input::placeholder, textarea::placeholder { color: #8e9a91; }
 }
 
 /* ==========================================================================
-   DatSan UI / UX Polish & Component Enhancements
+   datsan247 UI / UX Polish & Component Enhancements
    ========================================================================== */
 
 /* 1. Password input with Show/Hide toggle */
@@ -1233,7 +1238,7 @@ input:focus, select:focus, textarea:focus {
   .admin-header-inner { min-height: 58px; margin-top: 10px; padding: 0 10px; }
   .admin-brand { gap: 7px; font-size: 15px; white-space: nowrap; }
   .admin-brand small { display: none; }
-  .admin-brand .brand-icon { width: 30px; height: 30px; }
+  .admin-brand .brand-icon, .admin-brand .brand-logo { width: 30px; height: 30px; }
   .admin-header-actions .button { padding-right: 10px; padding-left: 10px; white-space: nowrap; }
   .admin-wrap .stat-grid .stat-card:last-child strong { font-size: 16px; letter-spacing: -.7px; }
 }

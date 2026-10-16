@@ -9,13 +9,13 @@ const smtp = readMailConfiguration({
   SMTP_PORT: '587',
   SMTP_USER: 'mailer@example.test',
   SMTP_PASSWORD: 'test-password',
-  MAIL_FROM: 'DatSan <mailer@example.test>',
+  MAIL_FROM: 'datsan247 <mailer@example.test>',
 });
 assert.ok(smtp);
 assert.equal(smtp.transport.host, 'smtp.example.test');
 assert.equal(smtp.transport.port, 587);
 assert.equal(smtp.transport.secure, false);
-assert.equal(smtp.from, 'DatSan <mailer@example.test>');
+assert.equal(smtp.from, 'datsan247 <mailer@example.test>');
 assert.throws(() => readMailConfiguration({ SMTP_HOST: 'smtp.example.test' }), /SMTP_USER/);
 assert.throws(() => readMailConfiguration({
   SMTP_HOST: 'smtp.example.test', SMTP_PORT: 'bad', SMTP_USER: 'mailer@example.test', SMTP_PASSWORD: 'x',
@@ -38,7 +38,7 @@ const details = {
   currency: 'VND',
 };
 const confirmation = buildBookingEmail(details);
-assert.equal(confirmation.subject, 'DatSan | Đặt sân đã được xác nhận');
+assert.equal(confirmation.subject, 'datsan247 | Đặt sân đã được xác nhận');
 assert.match(confirmation.text, /18:00–19:00/);
 assert.match(confirmation.text, /200\.000/);
 assert.match(confirmation.html, /&lt;script&gt;/);

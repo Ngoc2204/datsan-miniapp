@@ -726,7 +726,7 @@ export class OwnerService {
         'SELECT id FROM user_accounts WHERE lower(email) = lower($1) AND active = true',
         [input.email],
       );
-      if (!account.rows[0]) throw new NotFoundException('Email chưa đăng ký tài khoản DatSan');
+      if (!account.rows[0]) throw new NotFoundException('Email chưa đăng ký tài khoản datsan247');
       const staffUserId = account.rows[0].id;
 
       await client.query(

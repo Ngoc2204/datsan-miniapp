@@ -275,7 +275,7 @@ function AuthPanel({ onSuccess, initialMode = 'login' }: {
   return (
     <section className="auth-layout">
       <div className="auth-intro">
-        <span className="eyebrow">DatSan / TÀI KHOẢN & ĐỒNG BỘ</span>
+        <span className="eyebrow"><span className="brand-case">datsan247</span> / TÀI KHOẢN & ĐỒNG BỘ</span>
         <h1>Mỗi trận hay<br /><em>bắt đầu từ một sân.</em></h1>
         <p>Tìm sân phù hợp, giữ lịch nhanh chóng và ghép thêm đồng đội thể thao dễ dàng trên Zalo.</p>
         <div className="auth-points">
@@ -333,11 +333,11 @@ function AuthPanel({ onSuccess, initialMode = 'login' }: {
           </button>
         )}
         {mode !== 'business' && !error && !isZaloMiniApp() && !import.meta.env.DEV && (
-          <p className="fine-print">Hãy mở Mini App DatSan trong ứng dụng Zalo để đăng nhập bằng Zalo.</p>
+          <p className="fine-print">Hãy mở Mini App datsan247 trong ứng dụng Zalo để đăng nhập bằng Zalo.</p>
         )}
         {error && <p className="form-error" role="alert">{error}</p>}
         {mode === 'login' && <p className="fine-print"><a href="/admin/">Cổng quản trị viên nền tảng <ArrowRight size={13} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: 2 }} /></a></p>}
-        <p className="fine-print">Thông tin của bạn được bảo mật tuyệt đối theo tiêu chuẩn DatSan.</p>
+        <p className="fine-print">Thông tin của bạn được bảo mật tuyệt đối theo tiêu chuẩn datsan247.</p>
       </div>
     </section>
   );
@@ -352,7 +352,7 @@ function Header({ page, setPage, user, businesses, onSignOut, onAccount }: {
   return (
     <>
       <header className={page === 'owner' ? 'topbar owner-topbar' : 'topbar'}>
-        <button className="brand" onClick={() => setPage('discover')} aria-label="DatSan trang chủ"><span className="brand-icon">D</span><span>DatSan<small>THỂ THAO CÙNG NHAU</small></span></button>
+        <button className="brand" onClick={() => setPage('discover')} aria-label="datsan247 trang chủ"><span className="brand-logo" aria-hidden="true" /><span>datsan247<small>THỂ THAO CÙNG NHAU</small></span></button>
         <nav className="top-nav">
           <button className={page === 'discover' ? 'current' : ''} onClick={() => setPage('discover')}>Tìm sân</button>
           <button className={page === 'community' ? 'current' : ''} onClick={() => setPage('community')}>Ghép kèo</button>
@@ -899,7 +899,7 @@ function CommunityPanel({ sports, user, onLogin, notify }: {
               </div>
               <p className="game-meta">{dateLabel(game.starts_at, { hour: '2-digit', minute: '2-digit' })} · Tổ chức bởi {game.organizer_name}</p>
               <button className="text-button participants-trigger" onClick={() => void toggleParticipants(game)}>{participants[game.id] ? 'Ẩn người chơi' : 'Xem người chơi'}</button>
-              {participants[game.id] && <div className="participant-list">{participants[game.id].map((person) => <span key={person.userId}>{person.fullName || 'Người chơi DatSan'}</span>)}</div>}
+              {participants[game.id] && <div className="participant-list">{participants[game.id].map((person) => <span key={person.userId}>{person.fullName || 'Người chơi datsan247'}</span>)}</div>}
               {game.note && <p className="game-note">“{game.note}”</p>}
               <div className="game-actions">
                 {isOrganizer ? <button className="button quiet small" onClick={() => void changeMembership(game, 'close')}>Đóng kèo</button>
@@ -1201,7 +1201,7 @@ function OwnerPanel({ businesses, sports, notify }: { businesses: Business[]; sp
           <div className="section-heading"><div><span className="eyebrow">ĐỊA ĐIỂM CỦA BẠN</span><h2>{venues.length} địa điểm</h2></div><div className="inline-actions">{manager && business.status === 'approved' && venues.length > 0 && <button className="button primary small" onClick={() => setCreateVenueOpen(true)}>+ Thêm địa điểm</button>}<button className="button quiet small" onClick={() => void loadVenues()}><RotateCw size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} /> Làm mới</button></div></div>
           {venues.length > 0 && <div className="venue-selector">{venues.map((item) => <button key={item.id} className={'venue-select-card ' + (item.id === selectedVenueId ? 'active' : '')} onClick={() => { setSelectedVenueId(item.id); setEditingCourt(null); }}><span><strong>{item.name}</strong><small>{item.address}</small></span><Badge value={item.status} /></button>)}</div>}
           {(!venues.length || createVenueOpen) && <div className="card form-card"><span className="eyebrow">BƯỚC 1</span><h2>{venues.length ? 'Tạo địa điểm khác' : 'Tạo địa điểm đầu tiên'}</h2>{business.status === 'approved' && manager ? <form className="stack-form" onSubmit={createVenue}>
-            <label>Tên địa điểm<input name="name" minLength={2} maxLength={160} required placeholder="Ví dụ: DatSan Sports Hub" /></label>
+            <label>Tên địa điểm<input name="name" minLength={2} maxLength={160} required placeholder="Ví dụ: datsan247 Sports Hub" /></label>
             <label>Địa chỉ<input name="address" minLength={5} maxLength={500} required placeholder="Số nhà, đường, phường, quận, tỉnh/thành" /></label>
             <label>Mô tả<textarea name="description" maxLength={5000} rows={3} placeholder="Mô tả tiện ích và đặc điểm sân" /></label>
             <div className="form-grid two"><label>Vĩ độ<input name="latitude" type="number" min="-90" max="90" step="any" placeholder="10.7769" /></label><label>Kinh độ<input name="longitude" type="number" min="-180" max="180" step="any" placeholder="106.7009" /></label></div>
@@ -1342,7 +1342,7 @@ export function AdminPanel({ notify }: { notify: (message: string) => void }) {
     return { label: Number.isNaN(date.getTime()) ? month : new Intl.DateTimeFormat('vi-VN', { month: 'short' }).format(date).replace('.', ''), value: Number(item.booked_value_vnd) || 0 };
   });
   return <main className="page-wrap admin-wrap">
-    <div className="admin-page-heading"><div><span className="eyebrow">QUẢN TRỊ NỀN TẢNG</span><h1>Điều hành DatSan</h1><p>Duyệt nội dung, theo dõi hoạt động và quản lý danh mục.</p></div><button className="button outline small" onClick={() => void loadAll()}><RotateCw size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} /> Làm mới dữ liệu</button></div>
+    <div className="admin-page-heading"><div><span className="eyebrow">QUẢN TRỊ NỀN TẢNG</span><h1>Điều hành datsan247</h1><p>Duyệt nội dung, theo dõi hoạt động và quản lý danh mục.</p></div><button className="button outline small" onClick={() => void loadAll()}><RotateCw size={13} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} /> Làm mới dữ liệu</button></div>
     <div className="admin-workspace">
     <nav className="admin-sidebar" aria-label="Điều hướng quản trị">{tabs.map(([key, label]) => <button key={key} className={tab === key ? 'active' : ''} onClick={() => setTab(key)}><span className="admin-nav-icon">{tabIcons[key]}</span><span>{label}</span>{key === 'businesses' && businesses.filter((item) => item.status === 'pending_review').length > 0 && <span className="tab-count">{businesses.filter((item) => item.status === 'pending_review').length}</span>}{key === 'venues' && venues.filter((item) => item.status === 'pending_review').length > 0 && <span className="tab-count">{venues.filter((item) => item.status === 'pending_review').length}</span>}</button>)}</nav>
     <div className="admin-content">
@@ -1448,7 +1448,7 @@ export default function App() {
     <Header page={page} setPage={setPage} user={user} businesses={businesses} onSignOut={signOut} onAccount={(mode) => { setAuthMode(mode); setAuthReturnView('discover'); setPage('account'); }} />
     {notice && <div className="toast" role="status"><Sparkles size={16} className="toast-sparkle" /><span>{notice}</span><button aria-label="Đóng" onClick={() => setNotice('')}><X size={14} /></button></div>}
     {content}
-    <footer className="site-footer"><div className="footer-brand"><span className="brand-icon">D</span><span>DatSan<small>CHƠI THỂ THAO CÙNG NHAU</small></span></div><span>© {new Date().getFullYear()} DatSan</span><span>Tìm sân · Tạo trận · Vào cuộc</span></footer>
+    <footer className="site-footer"><div className="footer-brand"><span className="brand-logo" aria-hidden="true" /><span>datsan247<small>CHƠI THỂ THAO CÙNG NHAU</small></span></div><span>© {new Date().getFullYear()} datsan247</span><span className="footer-signature">Phát triển bởi Nguyễn Tất Ngọc</span><span>Tìm sân · Tạo trận · Vào cuộc</span></footer>
     <nav className="mobile-nav-spacer" aria-hidden="true"></nav>
   </div>;
 }

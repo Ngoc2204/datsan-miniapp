@@ -23,12 +23,12 @@ async function seedVenues(): Promise<void> {
 
     // 1. Create or get business
     let bizRes = await client.query<{ id: string }>(
-      "SELECT id FROM businesses WHERE display_name = 'DatSan Sports Club'",
+      "SELECT id FROM businesses WHERE display_name = 'datsan247 Sports Club'",
     );
     let bizId: string;
     if (bizRes.rows.length === 0) {
       bizRes = await client.query<{ id: string }>(
-        "INSERT INTO businesses (display_name, status) VALUES ('DatSan Sports Club', 'approved') RETURNING id",
+        "INSERT INTO businesses (display_name, status) VALUES ('datsan247 Sports Club', 'approved') RETURNING id",
       );
       bizId = bizRes.rows[0].id;
     } else {
@@ -37,7 +37,7 @@ async function seedVenues(): Promise<void> {
 
     const venuesData = [
       {
-        name: 'Sân Cầu Lông & Pickleball DatSan Star',
+        name: 'Sân Cầu Lông & Pickleball datsan247 Star',
         address: '128 Nguyễn Thị Thập, Tân Phú, Quận 7, TP. Hồ Chí Minh',
         lat: 10.7324,
         lng: 106.7156,
@@ -55,7 +55,7 @@ async function seedVenues(): Promise<void> {
         ],
       },
       {
-        name: 'Tổ Hợp Sân Bóng Đá & Cầu Lông DatSan Arena',
+        name: 'Tổ Hợp Sân Bóng Đá & Cầu Lông datsan247 Arena',
         address: '58 Trần Thái Tông, Cầu Giấy, Hà Nội',
         lat: 21.0333,
         lng: 105.7894,

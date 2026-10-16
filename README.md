@@ -1,6 +1,6 @@
-# DatSan
+# datsan247
 
-Monorepo MVP DatSan: API NestJS/PostgreSQL, cổng quản trị chủ sân/admin bằng React và giao diện khách tối ưu cho Zalo Mini App.
+Monorepo MVP datsan247: API NestJS/PostgreSQL, cổng quản trị chủ sân/admin bằng React và giao diện khách tối ưu cho Zalo Mini App.
 
 ## Yêu cầu
 
@@ -116,7 +116,7 @@ Chạy `rtk npm run mail:verify` để kiểm tra kết nối và xác thực SM
 
 Admin có GET /api/v1/admin/dashboard, CRUD cơ bản môn thể thao tại /api/v1/admin/sports và tra cứu/khóa tài khoản tại /api/v1/admin/users. Danh mục môn dùng dữ liệu PostgreSQL; các API địa điểm và ghép kèo kiểm tra mã môn đang hoạt động ở backend.
 
-- POST /api/v1/auth/zalo: nhận access token Mini App, backend xác minh hồ sơ với Zalo rồi cấp JWT DatSan.
+- POST /api/v1/auth/zalo: nhận access token Mini App, backend xác minh hồ sơ với Zalo rồi cấp JWT datsan247.
 - POST /api/v1/auth/customer/register và /api/v1/auth/login: tài khoản email/mật khẩu dùng cho cổng web và demo API.
 
 - PATCH /api/v1/owner/businesses/:businessId/courts/:courtId/configuration: cập nhật giờ, giá và thời lượng; backend từ chối cấu hình làm mất giờ của booking tương lai.

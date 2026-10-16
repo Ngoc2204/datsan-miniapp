@@ -38,7 +38,7 @@ export function isZaloMiniApp(): boolean {
 /**
  * Initialize native navigation bar in Zalo Mini App
  */
-export async function initZaloHeader(title = 'DatSan - Đặt sân thể thao'): Promise<void> {
+export async function initZaloHeader(title = 'datsan247 - Đặt sân thể thao'): Promise<void> {
   if (!isZaloMiniApp()) return;
   try {
     await zmpSetNavigationBarTitle({ title });
@@ -157,7 +157,7 @@ export async function getZaloAccessToken(): Promise<string> {
     return 'demo_zalo_devuser_' + encodeURIComponent('Người dùng Zalo');
   }
 
-  throw new Error('Đăng nhập Zalo chỉ hoạt động khi mở Mini App DatSan bên trong ứng dụng Zalo.');
+  throw new Error('Đăng nhập Zalo chỉ hoạt động khi mở Mini App datsan247 bên trong ứng dụng Zalo.');
 }
 
 /**
@@ -233,5 +233,5 @@ export async function getZaloPhoneNumber(
     return '0988776655';
   }
 
-  throw new Error('Lấy số điện thoại Zalo chỉ hoạt động khi mở Mini App DatSan trong ứng dụng Zalo.');
+  throw new Error('Lấy số điện thoại Zalo chỉ hoạt động khi mở Mini App datsan247 trong ứng dụng Zalo.');
 }

@@ -66,7 +66,7 @@ export default function AdminApp() {
   return <div className="app-shell admin-portal">
     <header className="admin-header">
       <div className="admin-header-inner">
-        <span className="admin-brand"><span className="brand-icon">D</span><span>DatSan<small>QUẢN TRỊ NỀN TẢNG</small></span></span>
+        <span className="admin-brand"><span className="brand-logo" aria-hidden="true" /><span>datsan247<small>QUẢN TRỊ NỀN TẢNG</small></span></span>
         {user && <div className="admin-header-actions"><span>{user.fullName || user.email}</span><button className="button quiet small" onClick={signOut}>Đăng xuất</button></div>}
       </div>
     </header>
@@ -74,7 +74,7 @@ export default function AdminApp() {
     {checkingSession ? <main className="admin-login-screen admin-session-check" role="status"><div className="loading-spinner"></div><p>Đang khôi phục phiên đăng nhập…</p></main>
       : user ? <AdminPanel notify={notify} /> : <main className="admin-login-screen">
       <div className="admin-login-copy">
-        <span className="eyebrow light">DATSAN / ĐIỀU HÀNH NỀN TẢNG</span>
+        <span className="eyebrow light"><span className="brand-case">datsan247</span> / ĐIỀU HÀNH NỀN TẢNG</span>
         <h1>Điều hành<br /><em>mọi trận đấu.</em></h1>
         <p>Trung tâm chỉ huy dành cho quản trị viên nền tảng. Duyệt chủ sân, kiểm duyệt địa điểm, cấu hình danh mục thể thao và theo dõi doanh thu toàn hệ thống.</p>
         <div className="admin-login-badges">

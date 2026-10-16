@@ -25,7 +25,7 @@ async function seedAdmin(): Promise<void> {
     const passwordHash = await hashPassword(password);
     await pool.query(
       "INSERT INTO user_accounts (email, full_name, platform_role, password_hash) " +
-      "VALUES ($1, 'DatSan Admin', 'platform_admin', $2) " +
+      "VALUES ($1, 'datsan247 Admin', 'platform_admin', $2) " +
       'ON CONFLICT (lower(email)) WHERE email IS NOT NULL ' +
       "DO UPDATE SET password_hash = EXCLUDED.password_hash, platform_role = 'platform_admin', active = true",
       [email, passwordHash],

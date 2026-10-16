@@ -18,6 +18,14 @@ type MessageRow = {
   currency: string;
 };
 
+function safeMailError(error: unknown): string {
+  const message = error instanceof Error ? error.message : 'Unknown email error';
+  return message
+    .replace(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g, '[email]')
+    .replace(/re_[A-Za-z0-9_-]{8,}/g, '[api-key]')
+    .slice(0, 500);
+}
+
 @Injectable()
 export class NotificationsService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(NotificationsService.name);
@@ -110,7 +118,7 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
     });
 
     try {
-      await this.transporter!.sendMail({
+      const result = await this.transporter!.sendMail({
         from: this.from,
         to: item.recipient_email,
         ...email,
@@ -119,8 +127,10 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
         "UPDATE notification_outbox SET status = 'sent', sent_at = now(), last_error = NULL, updated_at = now() WHERE id = $1",
         [item.id],
       );
+      this.logger.log(`Nhà cung cấp SMTP đã nhận email ${item.kind} (messageId: ${result.messageId}).`);
     } catch (error) {
       const messageText = error instanceof Error ? error.message.slice(0, 1000) : 'Unknown email error';
+      this.logger.error(`Gửi email ${item.kind} thất bại ở lần thử ${item.attempts}: ${safeMailError(error)}`);
       const nextStatus = item.attempts >= 5 ? 'failed' : 'pending';
       const backoffSeconds = Math.min(3600, 30 * Math.pow(2, item.attempts - 1));
       await this.database.query(

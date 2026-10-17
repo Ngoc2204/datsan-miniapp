@@ -1163,6 +1163,23 @@ input::placeholder, textarea::placeholder { color: #8e9a91; }
   .mobile-nav button > span:not(.mobile-nav-icon) { font-size: 11px; line-height: 1.2; white-space: nowrap; }
 }
 
+@media (max-width: 720px) {
+  .mobile-nav {
+    transition: height .18s ease, min-height .18s ease, flex-basis .18s ease, padding .18s ease, opacity .18s ease;
+  }
+  .mobile-nav.is-hidden {
+    height: 0;
+    min-height: 0;
+    flex-basis: 0;
+    padding: 0;
+    border-top-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
 /* 8. Global UI Micro-interactions & Polish */
 .button:active:not(:disabled) {
   transform: scale(0.97);

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { FormEvent, ReactNode } from 'react';
+import type { FormEvent, ReactNode, UIEvent } from 'react';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { divIcon, type LatLngExpression } from 'leaflet';
 import {
@@ -343,9 +343,10 @@ function AuthPanel({ onSuccess, initialMode = 'login' }: {
   );
 }
 
-function Header({ page, setPage, user, businesses, onSignOut, onAccount }: {
+function Header({ page, setPage, user, businesses, onSignOut, onAccount, mobileNavHidden }: {
   page: View; setPage: (view: View) => void; user: User | null;
   businesses: Business[]; onSignOut: () => void; onAccount: (mode: 'login' | 'business') => void;
+  mobileNavHidden: boolean;
 }) {
   const hasOwner = businesses.length > 0;
   const isAdmin = user?.platformRole === 'platform_admin';
@@ -365,7 +366,7 @@ function Header({ page, setPage, user, businesses, onSignOut, onAccount }: {
             : <><button className="button quiet small owner-link" onClick={() => onAccount('business')}>Đăng ký chủ sân</button><button className="button primary small" onClick={() => onAccount('login')}>Đăng nhập</button></>}
         </div>
       </header>
-      <nav className="mobile-nav" aria-label="Điều hướng chính Mini App">
+      <nav className={`mobile-nav${mobileNavHidden ? ' is-hidden' : ''}`} aria-label="Điều hướng chính Mini App" aria-hidden={mobileNavHidden}>
         <button className={page === 'discover' ? 'active' : ''} onClick={() => setPage('discover')}>
           <span className="mobile-nav-icon"><Search size={18} /></span>
           <span>Tìm sân</span>
@@ -1376,6 +1377,8 @@ export function AdminPanel({ notify }: { notify: (message: string) => void }) {
 export default function App() {
   const [page, setPage] = useState<View>('discover');
   const mainScrollRef = useRef<HTMLDivElement>(null);
+  const lastMainScrollTop = useRef(0);
+  const [mobileNavHidden, setMobileNavHidden] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'customer' | 'business'>('login');
   const [authReturnView, setAuthReturnView] = useState<View>('discover');
   const [user, setUser] = useState<User | null>(null);
@@ -1384,7 +1387,19 @@ export default function App() {
   const [notice, setNotice] = useState('');
   const [venues, setVenues] = useState<Row[]>([]);
 
+  const handleMainScroll = (event: UIEvent<HTMLDivElement>) => {
+    const nextScrollTop = event.currentTarget.scrollTop;
+    const scrollDelta = nextScrollTop - lastMainScrollTop.current;
+
+    if (nextScrollTop <= 72) setMobileNavHidden(false);
+    else if (Math.abs(scrollDelta) > 4) setMobileNavHidden(scrollDelta > 0);
+
+    lastMainScrollTop.current = nextScrollTop;
+  };
+
   useEffect(() => {
+    setMobileNavHidden(false);
+    lastMainScrollTop.current = 0;
     mainScrollRef.current?.scrollTo(0, 0);
     window.scrollTo(0, 0);
   }, [page]);
@@ -1451,8 +1466,8 @@ export default function App() {
   else content = <ExplorePanel sports={sports} user={user} onLogin={() => { setAuthMode('login'); setAuthReturnView('discover'); setPage('account'); }} onOpenBookings={() => setPage('bookings')} notify={notify} />;
 
   return <div className="app-shell">
-    <Header page={page} setPage={setPage} user={user} businesses={businesses} onSignOut={signOut} onAccount={(mode) => { setAuthMode(mode); setAuthReturnView('discover'); setPage('account'); }} />
-    <div className="app-main-scroll" ref={mainScrollRef}>
+    <Header page={page} setPage={setPage} user={user} businesses={businesses} onSignOut={signOut} onAccount={(mode) => { setAuthMode(mode); setAuthReturnView('discover'); setPage('account'); }} mobileNavHidden={mobileNavHidden} />
+    <div className="app-main-scroll" ref={mainScrollRef} onScroll={handleMainScroll}>
       {notice && <div className="toast" role="status"><Sparkles size={16} className="toast-sparkle" /><span>{notice}</span><button aria-label="Đóng" onClick={() => setNotice('')}><X size={14} /></button></div>}
       {content}
       <footer className="site-footer"><div className="footer-brand"><span className="brand-logo" aria-hidden="true" /><span>datsan247<small>CHƠI THỂ THAO CÙNG NHAU</small></span></div><span>© {new Date().getFullYear()} datsan247</span><span className="footer-signature">Phát triển bởi Nguyễn Tất Ngọc</span><span>Tìm sân · Tạo trận · Vào cuộc</span></footer>

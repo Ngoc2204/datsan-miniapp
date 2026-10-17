@@ -1129,11 +1129,6 @@ input::placeholder, textarea::placeholder { color: #8e9a91; }
 /* 7. Enhanced Mobile Navigation Bar */
 @media (max-width: 720px) {
   .mobile-nav {
-    position: fixed;
-    z-index: 30;
-    left: 0;
-    right: 0;
-    bottom: 0;
     display: flex;
     justify-content: space-around;
     align-items: stretch;

@@ -1,127 +1,192 @@
 # datsan247
 
-Monorepo MVP datsan247: API NestJS/PostgreSQL, cổng quản trị chủ sân/admin bằng React và giao diện khách tối ưu cho Zalo Mini App.
+<p align="center">
+  <img src="apps/web/public/datsan247-logo.png" alt="datsan247" width="240" />
+</p>
 
-## Yêu cầu
+<p align="center"><strong>Nền tảng tìm và đặt sân thể thao, xây dựng với trải nghiệm khách hàng trên Zalo Mini App.</strong></p>
 
-- Node.js 22.12 trở lên.
-- npm.
-- Docker Desktop hoặc Docker Engine có hỗ trợ Docker Compose.
+<p align="center">
+  <a href="https://datsan-miniapp.vercel.app/">Mở bản demo</a> ·
+  <a href="https://datsan247-api.onrender.com/api/v1/health">Kiểm tra API</a>
+</p>
 
-## Chạy local trên PowerShell
+datsan247 kết nối người chơi với chủ sân trong cùng một luồng: khách tìm địa điểm và giờ trống, xem giá rồi gửi đặt sân; chủ sân quản lý lịch, giá và nhân viên; quản trị viên duyệt địa điểm và giám sát hoạt động trên nền tảng.
 
-1. Tạo file cấu hình local:
-   Copy-Item .env.example .env
-2. Cài dependencies:
-   rtk npm install
-3. Khởi động PostgreSQL:
-   rtk docker compose up -d postgres
-4. Tạo schema và nạp bốn môn thể thao ban đầu:
-   rtk npm run db:migrate
-5. Đặt JWT_SECRET, ADMIN_EMAIL và ADMIN_PASSWORD trong .env.
-6. Tạo tài khoản admin đầu tiên:
-   rtk npm run db:seed:admin
-7. Chạy API:
-   rtk npm run dev:api
-8. Chạy giao diện: `rtk npm run dev:web` rồi mở địa chỉ Vite hiện ra (mặc định http://localhost:5173).
-   Cổng admin tổng có giao diện riêng tại http://localhost:5173/admin/; URL sẽ dùng cùng cổng Vite nếu 5173 đã bận.
-9. Mở http://localhost:3000/api/v1/health để xem trạng thái API và PostgreSQL.
-10. Gọi GET http://localhost:3000/api/v1/sports để lấy danh mục môn thể thao đang hoạt động.
+Đây là dự án MVP cá nhân được triển khai thành web và API riêng. Giao diện khách hàng tích hợp Zalo Mini App SDK để lấy access token, vị trí, thông tin tài khoản và số điện thoại theo quyền được cấp.
 
-Kiểm tra luồng MVP bằng `rtk npm run test:mvp` sau khi PostgreSQL đã chạy. Lệnh này tạo schema PostgreSQL riêng, chạy migrations và kiểm tra đăng ký/duyệt chủ sân, cấu hình/duyệt địa điểm, tìm giờ trống, đặt và hủy sân, thanh toán demo, email outbox, phân quyền và ghép kèo. Schema thử nghiệm được xóa khi lệnh kết thúc.
+> **Trạng thái demo:** Giao diện web và API đã được triển khai. Đăng nhập Zalo trên môi trường thật cần Mini App được kích hoạt và cấp quyền tương ứng trong Mini App Center. Thanh toán hiện là luồng mô phỏng; email cần SMTP và địa chỉ người gửi đã được xác minh.
 
-Các lệnh theo quy ước RTK của workspace. Không commit file .env. Thư mục .tailieu được loại khỏi Git bằng .gitignore.
+## Tính năng
 
-## Database production trên Neon
+### Dành cho người chơi
 
-- Cấu hình `DATABASE_URL` của API Render bằng connection string của Neon; không commit connection string hoặc secret vào Git.
-- `npm run start:render` chạy migrations rồi khởi động API. Migrations được theo dõi trong `schema_migrations` và có thể chạy lại an toàn.
-- Seed admin và dữ liệu sân mẫu không tự chạy khi service khởi động. Chạy `npm run db:seed:admin` một lần khi cần tạo/khởi tạo admin; đặt `ADMIN_EMAIL` và `ADMIN_PASSWORD` riêng, tối thiểu 12 ký tự, trong môi trường chạy seed.
-- `npm run db:seed:venues` chỉ dùng khi chủ động muốn thêm dữ liệu sân mẫu vào đúng database. Không chạy lệnh này với Neon production nếu không muốn tạo dữ liệu mẫu.
-- Sao lưu database trước khi chạy migration có thể thay đổi hoặc xóa dữ liệu.
+- Khám phá địa điểm theo môn thể thao, tên/khu vực, khoảng giá, khoảng cách và thời gian muốn chơi.
+- Xem giờ còn trống và giá sân do API tính từ cấu hình sân.
+- Đặt sân, xem lịch sử và hủy lịch theo trạng thái booking.
+- Đăng nhập bằng email hoặc tích hợp đăng nhập Zalo Mini App.
+- Tạo, tham gia, rời hoặc báo cáo các trận ghép kèo cộng đồng.
 
-## Cấu trúc hiện tại
+### Dành cho chủ sân và nhân viên
 
-- apps/api: API NestJS.
-- apps/web: giao diện React dùng chung cho khách, chủ sân và admin; có cấu hình Zalo Mini App trong `app-config.json`.
-- apps/api/database/migrations: SQL migrations cho PostgreSQL.
-- apps/api/scripts: công cụ chạy migration.
-- compose.yaml: PostgreSQL local.
-- .env.example: cấu hình mẫu không chứa secret production.
+- Đăng ký doanh nghiệp, gửi địa điểm để quản trị viên xét duyệt.
+- Cấu hình sân, giờ hoạt động, thời lượng và giá.
+- Quản lý lịch đặt trực tuyến và tạo booking tại quầy trên lịch sân.
+- Khóa hoặc mở khung giờ, phân công nhân viên theo địa điểm.
+- Xem báo cáo lượt đặt và giá trị booking trong khoảng thời gian.
 
-## Luồng MVP đã triển khai
+### Dành cho quản trị viên nền tảng
 
-Giao diện kết nối các luồng đăng nhập khách/Zalo và đăng ký chủ sân; duyệt hồ sơ/doanh nghiệp/địa điểm; cấu hình sân, giờ và giá; tìm địa điểm và khung giờ; đặt tại sân/thanh toán demo; lịch của khách; ghép kèo; lịch vận hành, đặt thủ công, khóa giờ và phân công nhân viên; quản trị môn, tài khoản, báo cáo và nhật ký.
+- Duyệt hồ sơ doanh nghiệp và địa điểm.
+- Quản lý môn thể thao, tài khoản và trạng thái hoạt động.
+- Xem báo cáo tổng quan, nhật ký quản trị và xử lý báo cáo ghép kèo.
+- Quyền admin được kiểm tra ở API; không thể tự cấp quyền qua luồng đăng ký công khai.
 
-Để gắn ứng dụng với tài khoản Mini App của bạn, chạy `rtk npx zmp init` bên trong `apps/web` và nhập Mini App ID hợp lệ. `apps/web/app-config.json` đã khai báo tài nguyên với tên file ổn định để deploy sau khi build.
+## Điểm kỹ thuật
 
-## Giao diện khách, chủ sân và admin
+- **Một lịch sân dùng chung:** booking trực tuyến, booking tại quầy và khung giờ bị khóa cùng ảnh hưởng đến kết quả tìm giờ trống.
+- **Tính giờ và giá ở backend:** API kiểm tra cấu hình sân, booking hiện có và thời gian bị khóa; giao diện không tự quyết định giá cuối cùng.
+- **Phân quyền theo vai trò và địa điểm:** khách, admin, chủ sân và nhân viên được giới hạn theo quyền tương ứng; nhân viên chỉ xem địa điểm được phân công.
+- **Thông báo có hàng đợi:** sự kiện email xác nhận và nhắc lịch được ghi vào PostgreSQL outbox; SMTP chưa sẵn sàng thì email chưa được gửi và có thể được thử lại.
+- **Triển khai tách lớp:** web trên Vercel, API trên Render và PostgreSQL trên Neon; migration được chạy khi API khởi động qua cấu hình Render.
 
-- Chạy API tại `http://localhost:3000`, sau đó giao diện bằng `rtk npm run dev:web`.
-- Khách và chủ sân dùng `/`; quản trị viên nền tảng dùng `/admin/`. Admin đăng nhập bằng tài khoản tạo qua `rtk npm run db:seed:admin`; tài khoản khác không vào được cổng này. API vẫn kiểm tra quyền admin trên từng yêu cầu.
-- `rtk npm run build:web` tạo gói khách/Mini App trong `apps/web/dist`; `rtk npm run build:admin` tạo gói admin riêng trong `apps/web/dist-admin`.
-- Tạo `.env` từ `.env.example`; `VITE_API_URL` trỏ giao diện tới API.
-- Để liên kết Mini App thật, chạy `rtk npx zmp init` trong `apps/web` và nhập Mini App ID của bạn. Đăng nhập Zalo cần chạy trong Zalo Mini App thật; trình duyệt thường chỉ xem được giao diện.
-## Auth và duyệt hồ sơ chủ sân
+## Kiến trúc
 
-- POST /api/v1/auth/business/register: tạo tài khoản chủ sân, doanh nghiệp chờ duyệt và phiên đăng nhập.
-- POST /api/v1/auth/login: đăng nhập bằng email/mật khẩu.
-- GET /api/v1/auth/me: xem tài khoản hiện tại (Bearer token).
-- GET /api/v1/admin/businesses?status=pending_review: danh sách hồ sơ chờ duyệt (admin).
-- PATCH /api/v1/admin/businesses/:id/review: duyệt, từ chối hoặc tạm khóa hồ sơ (admin).
+```mermaid
+flowchart LR
+    Player[Người chơi<br/>Zalo Mini App / Web] --> Web[React + Vite]
+    Owner[Chủ sân / Nhân viên] --> Web
+    Admin[Quản trị viên] --> Web
+    Web --> API[NestJS REST API]
+    API --> DB[(PostgreSQL<br/>Neon / Docker)]
+    API --> Zalo[Zalo Graph API]
+    API --> Outbox[(Email outbox)]
+    Outbox --> SMTP[SMTP provider]
+```
 
-Tài khoản admin chỉ được tạo bằng lệnh seed local; API đăng ký công khai không thể tự cấp quyền admin.
+### Công nghệ
 
-## Cổng chủ sân và duyệt địa điểm
+| Thành phần | Công nghệ |
+| --- | --- |
+| Giao diện khách, chủ sân và admin | React 19, TypeScript, Vite |
+| Tích hợp Mini App | Zalo Mini App SDK (`zmp-sdk`) |
+| API | NestJS, TypeScript, REST |
+| Cơ sở dữ liệu | PostgreSQL, SQL migrations, Neon |
+| Email | Nodemailer, SMTP, PostgreSQL outbox |
+| Triển khai | Vercel (web), Render (API), Neon (database) |
 
-- GET /api/v1/owner/businesses: xem doanh nghiệp và trạng thái duyệt.
-- POST /api/v1/owner/businesses/:businessId/venues: tạo địa điểm nháp và bật danh mục môn.
-- POST /api/v1/owner/businesses/:businessId/venues/:venueId/courts: cấu hình sân, thời lượng, giờ hoạt động và giá.
-- POST /api/v1/owner/businesses/:businessId/venues/:venueId/submit: gửi địa điểm đủ cấu hình để admin duyệt.
-- GET /api/v1/admin/venues?status=pending_review và PATCH /api/v1/admin/venues/:id/review: admin duyệt, từ chối hoặc tạm khóa địa điểm.
+## Chạy dự án local
 
-## Khám phá và đặt sân
+### Yêu cầu
 
-- GET /api/v1/venues: tìm địa điểm đã duyệt theo môn, tên/khu vực, giá và tọa độ.
-- Bộ lọc tìm sân hỗ trợ `date=YYYY-MM-DD`, `startTime=HH:mm`, `durationMinutes` (mặc định theo từng sân) và `maxDistanceKm` (cần `latitude` và `longitude`). Khi có ngày, backend chỉ trả địa điểm có ít nhất một sân còn trống, có giá và không bị khóa trong khung giờ phù hợp. Chạy `rtk npm run test:explore` để kiểm tra bộ lọc với dữ liệu tạm được rollback sau khi test.
-- GET /api/v1/venues/:venueId: xem địa điểm, sân, giờ mở cửa và bảng giá.
-- GET /api/v1/venues/:venueId/courts/:courtId/availability?date=YYYY-MM-DD: lấy giờ còn trống và giá backend tính.
-- POST /api/v1/bookings/courts/:courtId: tạo booking thanh toán tại sân hoặc giữ chỗ thanh toán demo (Bearer token).
-- GET /api/v1/bookings/mine, POST /api/v1/bookings/:bookingId/cancel: xem và hủy lịch của khách.
-- POST /api/v1/bookings/:bookingId/demo-payment: mô phỏng kết quả thanh toán demo.
+- Node.js 22.12 trở lên và npm.
+- Docker Desktop hoặc Docker Engine có Docker Compose.
 
-Email xác nhận và nhắc lịch được ghi vào PostgreSQL outbox trong cùng giao dịch booking. Backend gửi email xác nhận sau khi booking được xác nhận, sau đó nhắc trước 24 giờ và 2 giờ nếu thời điểm gửi còn ở tương lai. Địa chỉ nhập khi đặt sân được ưu tiên; nếu để trống, backend dùng email tài khoản khách. Nếu tài khoản không có email, khách cần nhập một địa chỉ email để tạo booking.
+### Cài đặt
 
-SMTP cấu hình qua `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` và `MAIL_FROM`. Đặt các biến này trong `.env` khi chạy local và trong Render → API service → Environment khi chạy production; không commit mật khẩu hoặc gửi mật khẩu qua chat. `MAIL_FROM` phải là địa chỉ gửi đã được SMTP provider xác minh. Nếu SMTP chưa cấu hình, email vẫn nằm trong outbox và sẽ được xử lý sau khi cấu hình SMTP rồi khởi động lại API.
+Từ thư mục gốc của repository:
 
-Ví dụ dùng Gmail: `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER` là địa chỉ Gmail đầy đủ, `SMTP_PASSWORD` là App Password và `MAIL_FROM` dùng cùng địa chỉ gửi. Google yêu cầu bật xác minh 2 bước để tạo App Password; không dùng mật khẩu đăng nhập Gmail. Xem [hướng dẫn App Password của Google](https://support.google.com/accounts/answer/2461835) và [cấu hình SMTP Gmail](https://support.google.com/a/answer/176600).
+```powershell
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
+npm install
+docker compose up -d postgres
+```
 
-Chạy `rtk npm run mail:verify` để kiểm tra kết nối và xác thực SMTP từ máy local; lệnh này không gửi email. Chạy `rtk npm run test:notifications` để kiểm tra cấu hình và mẫu thư cục bộ.
+Cập nhật `.env` trước khi chạy. Tối thiểu cần đặt `JWT_SECRET` (chuỗi ngẫu nhiên dài ít nhất 32 ký tự), `ADMIN_EMAIL` và `ADMIN_PASSWORD` (tối thiểu 12 ký tự). Giữ file `.env` ở máy local, không commit hoặc gửi secret qua chat.
 
-## Ghép kèo cộng đồng
+Tạo cấu trúc database và tài khoản admin đầu tiên:
 
-- GET /api/v1/community/games: tìm kèo sắp tới.
-- POST /api/v1/community/games: tạo kèo; organizer tự được tính là người tham gia đầu tiên.
-- POST /api/v1/community/games/:gameId/join và DELETE /api/v1/community/games/:gameId/join: tham gia hoặc rời kèo.
-- POST /api/v1/community/games/:gameId/close: người tổ chức đóng kèo.
-- POST /api/v1/community/games/:gameId/report: báo cáo nội dung.
-- GET /api/v1/admin/community/reports và PATCH /api/v1/admin/community/reports/:id/review: admin xử lý báo cáo.
+```powershell
+npm run db:migrate
+npm run db:seed:admin
+```
 
-- GET /api/v1/owner/businesses/:businessId/bookings?from=YYYY-MM-DD&to=YYYY-MM-DD: xem lịch trong tối đa 31 ngày; nhân viên chỉ thấy địa điểm được phân công.
-- POST /api/v1/owner/businesses/:businessId/bookings/manual: tạo booking tại quầy theo cùng nguồn lịch và quy tắc giá.
-- PATCH /api/v1/owner/businesses/:businessId/bookings/:bookingId: hủy hoặc hoàn tất booking theo quyền và trạng thái.
+Khởi động API và giao diện ở hai cửa sổ terminal riêng:
 
-- PATCH /api/v1/owner/businesses/:businessId/venues/:venueId: chỉnh thông tin địa điểm nháp/bị trả về trước khi gửi duyệt lại.
-- POST /api/v1/owner/businesses/:businessId/courts/:courtId/blocks và DELETE /api/v1/owner/businesses/:businessId/blocks/:blockId: khóa/mở khung giờ; không khóa chồng booking đang hiệu lực.
+```powershell
+npm run build:api
+npm run dev:api
+```
 
-Admin có GET /api/v1/admin/dashboard, CRUD cơ bản môn thể thao tại /api/v1/admin/sports và tra cứu/khóa tài khoản tại /api/v1/admin/users. Danh mục môn dùng dữ liệu PostgreSQL; các API địa điểm và ghép kèo kiểm tra mã môn đang hoạt động ở backend.
+```powershell
+npm run dev:web
+```
 
-- POST /api/v1/auth/zalo: nhận access token Mini App, backend xác minh hồ sơ với Zalo rồi cấp JWT datsan247.
-- POST /api/v1/auth/customer/register và /api/v1/auth/login: tài khoản email/mật khẩu dùng cho cổng web và demo API.
+Mở `http://localhost:5173`. API health check nằm tại `http://localhost:3000/api/v1/health`; trang admin tại `http://localhost:5173/admin/`.
 
-- PATCH /api/v1/owner/businesses/:businessId/courts/:courtId/configuration: cập nhật giờ, giá và thời lượng; backend từ chối cấu hình làm mất giờ của booking tương lai.
+Các biến chính trong `.env.example`:
 
-- GET/POST /api/v1/owner/businesses/:businessId/staff: xem và phân công tài khoản đã đăng ký vào địa điểm.
-- DELETE /api/v1/owner/businesses/:businessId/staff/:venueId/:userId: thu hồi quyền tại địa điểm; membership bị tắt nếu không còn phân công nào.
+| Biến | Mục đích |
+| --- | --- |
+| `DATABASE_URL` | Connection string PostgreSQL |
+| `JWT_SECRET` | Ký access token của API |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Tạo tài khoản admin ban đầu |
+| `VITE_API_URL` | URL API mà giao diện gọi, gồm `/api/v1` |
+| `ZALO_APP_ID`, `VITE_ZALO_APP_ID` | Định danh Mini App; cần khớp cấu hình trong Mini App Center |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM` | Cấu hình gửi email |
 
-- GET /api/v1/owner/businesses/:businessId/reports?from=YYYY-MM-DD&to=YYYY-MM-DD: tổng hợp lượt đặt và giá trị đặt sân trong tối đa 31 ngày (chủ sở hữu/quản lý).
+Không chạy `npm run db:seed:venues` trên database production trừ khi chủ động muốn thêm dữ liệu sân mẫu.
+
+## Chạy và triển khai Zalo Mini App
+
+Source giao diện dùng `zmp-sdk` cho access token, vị trí, thông tin người dùng và số điện thoại. Backend nhận access token tại `POST /api/v1/auth/zalo`, xác minh hồ sơ với Zalo rồi cấp JWT riêng cho datsan247.
+
+Để liên kết với Mini App của bạn:
+
+1. Cấu hình Mini App ID hợp lệ trong `apps/web/app-config.json` và các biến môi trường liên quan.
+2. Đăng nhập Zalo CLI bằng `npm run zmp:login`.
+3. Build và triển khai bằng `npm run zmp:deploy`.
+4. Trong Mini App Center, kích hoạt ứng dụng, cấu hình domain và bật các quyền mà tính năng cần.
+
+Chỉ luồng chạy trong Zalo Mini App thật mới cấp access token Zalo. Trình duyệt web thông thường không thể thay thế bước kích hoạt hoặc quyền truy cập đó. Chế độ phát triển có token giả để kiểm tra luồng local; token này không được chấp nhận trong production.
+
+## API chính
+
+API dùng tiền tố `/api/v1`.
+
+| Nhóm | Endpoint tiêu biểu |
+| --- | --- |
+| Health và danh mục | `GET /health`, `GET /sports` |
+| Đăng nhập | `/auth/login`, `/auth/customer/register`, `/auth/business/register`, `/auth/zalo`, `/auth/me` |
+| Tìm sân | `GET /venues`, `GET /venues/:venueId`, `GET /venues/:venueId/courts/:courtId/availability` |
+| Booking | `POST /bookings/courts/:courtId`, `GET /bookings/mine`, `POST /bookings/:bookingId/cancel` |
+| Chủ sân | `/owner/businesses`, quản lý địa điểm, booking, giá, giờ khóa và nhân viên |
+| Quản trị | `/admin/dashboard`, duyệt địa điểm/doanh nghiệp, quản lý môn và tài khoản |
+| Ghép kèo | `/community/games`, tham gia/rời kèo và báo cáo nội dung |
+
+## Kiểm tra
+
+Repository có các lệnh kiểm tra luồng và tích hợp sau:
+
+```powershell
+npm run test:mvp
+npm run test:explore
+npm run test:zalo-auth
+npm run test:notifications
+npm run mail:verify
+```
+
+`test:mvp` cần PostgreSQL và kiểm tra các luồng nghiệp vụ trên schema thử nghiệm riêng. `mail:verify` chỉ kiểm tra kết nối/xác thực SMTP, không gửi email. Các lệnh kiểm tra không thay thế bước thử đăng nhập bằng tài khoản Zalo thật trong Mini App đã được kích hoạt.
+
+## Triển khai
+
+- **Web:** [datsan-miniapp.vercel.app](https://datsan-miniapp.vercel.app/)
+- **API health:** [datsan247-api.onrender.com/api/v1/health](https://datsan247-api.onrender.com/api/v1/health)
+- **Database:** PostgreSQL trên Neon.
+
+Khi tự triển khai:
+
+- API cần `DATABASE_URL`, `JWT_SECRET` và `CORS_ORIGINS` chứa origin của web đang dùng.
+- Web cần `VITE_API_URL` trỏ đến API, ví dụ `https://datsan247-api.onrender.com/api/v1`.
+- Render chạy migrations khi service khởi động. Sao lưu database trước khi triển khai migration có thể ảnh hưởng dữ liệu.
+- Email production chỉ gửi được khi thông tin SMTP hợp lệ và địa chỉ `MAIL_FROM` được nhà cung cấp xác minh.
+
+## Phạm vi hiện tại
+
+- **Thanh toán:** luồng thanh toán tại sân và thanh toán demo; chưa tích hợp cổng thanh toán thật.
+- **Đăng nhập Zalo:** đã có tích hợp SDK và xác minh token ở API; đăng nhập production còn phụ thuộc trạng thái kích hoạt, domain và quyền của Mini App.
+- **Email:** đã có outbox và lịch nhắc; cần cấu hình SMTP cùng sender đã xác minh để nhận thư thực tế.
+
+---
+
+**Phát triển bởi Nguyễn Tất Ngọc**
